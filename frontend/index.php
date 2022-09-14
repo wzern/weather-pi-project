@@ -19,14 +19,30 @@
     <script>
     // Setup Block
     const temperature = <?php echo json_encode($temperature) ?>;
+    const humidity = <?php echo json_encode($humidity) ?>;
+    const pressure = <?php echo json_encode($pressure) ?>;
 
     const data = {
     labels: temperature,
     datasets: [{
-        label: 'My First Dataset',
+        label: 'Temperature',
         data: temperature,
         fill: false,
         borderColor: 'rgb(75, 192, 192)',
+        tension: 0.1
+    },
+    {
+        label: 'Humidity',
+        data: humidity,
+        fill: false,
+        borderColor: 'rgb(255, 99, 132)',
+        tension: 0.1
+    },
+    {
+        label: 'Pressure',
+        data: pressure,
+        fill: false,
+        borderColor: 'rgb(153, 102, 255)',
         tension: 0.1
     }]
     };

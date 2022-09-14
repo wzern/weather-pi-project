@@ -18,9 +18,13 @@ $conn->close();
 
 if ($result->num_rows > 0) {
     $temperature = array();
+    $humidity = array();
+    $pressure = array();
     // output data of each row
     while($row = $result->fetch_assoc()) {
         $temperature[] = $row['temperature'];
+        $humidity[] = $row['humidity'];
+        $pressure[] = $row['pressure'];
     }
 } else {
     echo "0 results";
