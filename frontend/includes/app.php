@@ -30,3 +30,10 @@ if ($result->num_rows > 0) {
     echo "0 results";
 }
 ?> 
+
+<script>
+    // Setup Block
+    const temperature = <?php echo json_encode($temperature) ?>;
+    const humidity = <?php echo json_encode($humidity) ?>;
+    const pressure = <?php echo json_encode($pressure) ?>;
+</script>
