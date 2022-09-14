@@ -1,4 +1,5 @@
 <?php
+// Define variables
 $servername = "localhost";
 $username = "username";
 $password = "password";
@@ -11,11 +12,14 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// Execute SQL command
 $sql = "SELECT * FROM sensor_data_alt";
 $result = $conn->query($sql);
 
+// Close Connection
 $conn->close();
 
+// Extract data into arrays if data exists
 if ($result->num_rows > 0) {
     $temperature = array();
     $humidity = array();
@@ -31,6 +35,7 @@ if ($result->num_rows > 0) {
 }
 ?> 
 
+<!-- Set javascript data arrays -->
 <script>
     // Setup Block
     const temperature = <?php echo json_encode($temperature) ?>;

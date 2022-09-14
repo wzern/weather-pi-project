@@ -1,3 +1,4 @@
+// Data Block
 const temperatureData = {
   labels: temperature,
   datasets: [
