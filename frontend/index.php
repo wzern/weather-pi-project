@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/styles.css">
     <script src="scripts/nav.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 </head>
 <body>
     <!-- Page navigation -->
@@ -50,6 +51,9 @@
             </div>
         </div>
     </main>
+
+    <!-- Footer -->
+    <footer>Created by <a href="https://github.com/wzerp" target="_blank">William Zernikow</a> | <a href="https://github.com/wzerp/weather-pi-project" target="_blank">GitHub Repository</a></footer>
 
     <!-- Render the charts with charts.js script -->
     <script src="scripts/charts.js"></script>

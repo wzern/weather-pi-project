@@ -2,6 +2,7 @@
   transition: all 0.3s;
   margin: 0;
   padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 body {
@@ -88,6 +89,24 @@ header h1 {
 
 .chart canvas {
   margin: 15px;
+}
+
+footer {
+  margin: 20px auto;
+  width: fit-content;
+  color: #f1f1f1;
+  font-weight: 600;
+}
+
+footer a {
+  color: #b7f1ff;
+  text-decoration: none;
+  opacity: 0.9;
+}
+
+footer a:hover {
+  color: #4ea0ff;
+  text-decoration: none;
 }
 
 @media only screen and (max-width: 1024px) {

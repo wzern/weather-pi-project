@@ -1,10 +1,10 @@
 // Data Block
 const temperatureData = {
-  labels: temperature,
+  labels: timestampArr,
   datasets: [
     {
-      label: "Temperature",
-      data: temperature,
+      label: "Temperature 24H",
+      data: temperatureDataArr,
       fill: false,
       borderColor: "rgb(255, 99, 132)",
       tension: 0.1,
@@ -13,11 +13,11 @@ const temperatureData = {
 };
 
 const humidityData = {
-  labels: humidity,
+  labels: timestampArr,
   datasets: [
     {
-      label: "Humidity",
-      data: humidity,
+      label: "Humidity 24H",
+      data: humidityDataArr,
       fill: false,
       borderColor: "rgb(75, 192, 192)",
       tension: 0.1,
@@ -26,11 +26,11 @@ const humidityData = {
 };
 
 const pressureData = {
-  labels: pressure,
+  labels: timestampArr,
   datasets: [
     {
-      label: "Pressure",
-      data: pressure,
+      label: "Pressure 24H",
+      data: pressureDataArr,
       fill: false,
       borderColor: "rgb(153, 102, 255)",
       tension: 0.1,
