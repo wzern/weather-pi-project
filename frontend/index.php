@@ -11,24 +11,45 @@
 
     <!-- Dependencies -->
     <link rel="stylesheet" href="css/styles.css">
+    <script src="scripts/nav.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <!-- Page navigation -->
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" id="closebtn" onclick="closeNav()">
+            &times;
+        </a>
+        <a href="#">Dashboard</a>
+        <a href="#">Placeholder</a>
+        <a href="#">Placeholder</a>
+        <a href="#">Settings</a>
+    </div>
+
     <!-- Include main PHP script -->
     <?php require_once 'includes/app.php'?>
 
-    <!-- All the charts -->
-    <div class="charts">
-        <div class="chart">
-            <canvas id="temperatureChart"></canvas>
+    <!-- Main body element -->
+    <main id="main">
+        <header>
+            <span id="openbtn" onclick="openNav()"> &#9776; </span>
+            <h1>Weather Pi</h1>
+        </header>
+        <div class="container">
+            <!-- All the charts -->
+            <div class="charts">
+                <div class="chart">
+                    <canvas id="temperatureChart"></canvas>
+                </div>
+                <div class="chart">
+                    <canvas id="humidityChart"></canvas>
+                </div>
+                <div class="chart">
+                    <canvas id="pressureChart"></canvas>
+                </div>
+            </div>
         </div>
-        <div class="chart">
-            <canvas id="humidityChart"></canvas>
-        </div>
-        <div class="chart">
-            <canvas id="pressureChart"></canvas>
-        </div>
-    </div>
+    </main>
 
     <!-- Render the charts with charts.js script -->
     <script src="scripts/charts.js"></script>
