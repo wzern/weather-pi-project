@@ -49,11 +49,11 @@
                     <canvas id="pressureChart"></canvas>
                 </div>
             </div>
+
+            <!-- Footer -->
+            <footer>Created by <a href="https://github.com/wzerp" target="_blank">William Zernikow</a> | <a href="https://github.com/wzerp/weather-pi-project" target="_blank">GitHub Repository</a></footer>
         </div>
     </main>
-
-    <!-- Footer -->
-    <footer>Created by <a href="https://github.com/wzerp" target="_blank">William Zernikow</a> | <a href="https://github.com/wzerp/weather-pi-project" target="_blank">GitHub Repository</a></footer>
 
     <!-- Render the charts with charts.js script -->
     <script src="scripts/charts.js"></script>
