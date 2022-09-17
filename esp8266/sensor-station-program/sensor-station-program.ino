@@ -51,7 +51,6 @@ void setup() {
 }
 
 void loop() {
-  delay(55000);
   Serial.print("connecting to ");
   Serial.println(host); // Use WiFiClient class to create TCP connections
   WiFiClient client;
@@ -145,4 +144,6 @@ void loop() {
   }
   Serial.println();
   Serial.println("closing connection");
+  
+  delay(35995000);
 }
