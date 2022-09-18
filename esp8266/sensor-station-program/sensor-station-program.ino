@@ -120,7 +120,7 @@ void loop() {
   url += "&humidity=";
   url += String(h);
   url += "&pressure=";
-  url += String(P);
+  url += String(P, 2);
   url += "&light=";
   url += "N/A";
 
