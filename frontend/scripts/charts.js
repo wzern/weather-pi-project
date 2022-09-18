@@ -41,7 +41,7 @@ const humidityData = {
       label: "Humidity 24H",
       data: humidityDataArr,
       fill: false,
-      borderColor: "rgb(75, 192, 192)",
+      borderColor: "rgb(255, 159, 64)",
       tension: 0.1,
     },
   ],
@@ -54,7 +54,14 @@ const pressureData = {
       label: "Pressure 24H",
       data: pressureDataArr,
       fill: false,
-      borderColor: "rgb(153, 102, 255)",
+      borderColor: "rgb(75, 192, 192)",
+      tension: 0.1,
+    },
+    {
+      label: "Pressure at Sea level",
+      data: pressureSLDataArr,
+      fill: false,
+      borderColor: "rgb(54, 162, 235)",
       tension: 0.1,
     },
   ],
@@ -91,7 +98,9 @@ const pressureConfig = {
   options: {
     scales: {
       y: {
-        beginAtZero: true,
+        beginAtZero: false,
+        min: 950,
+        max: 1050,
       },
     },
   },

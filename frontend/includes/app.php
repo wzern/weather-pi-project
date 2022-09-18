@@ -41,6 +41,7 @@ if ($result->num_rows > 0) {
     $temperatureDataArr = array();
     $humidityDataArr = array();
     $pressureDataArr = array();
+    $pressureSLDataArr = array();
     $timestampArr = array();
 
     // output data of each row
@@ -48,6 +49,7 @@ if ($result->num_rows > 0) {
         $temperatureDataArr[] = $row['temperature'];
         $humidityDataArr[] = $row['humidity'];
         $pressureDataArr[] = $row['pressure'];
+        $pressureSLDataArr[] = 1013.2;
         $timestampArr[] = $row['time'];
     }
 } else {
@@ -65,5 +67,6 @@ $conn->close();
     const temperatureDataArr = <?php echo json_encode($temperatureDataArr) ?>;
     const humidityDataArr = <?php echo json_encode($humidityDataArr) ?>;
     const pressureDataArr = <?php echo json_encode($pressureDataArr) ?>;
+    const pressureSLDataArr = <?php echo json_encode($pressureSLDataArr) ?>;
     const timestampArr = <?php echo json_encode($timestampArr) ?>;
 </script>
