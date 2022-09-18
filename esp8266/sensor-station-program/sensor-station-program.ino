@@ -137,5 +137,5 @@ void loop() {
   Serial.println("closing connection");
 
   
-  delay(1800000);
+  delay(3600000);
 }
