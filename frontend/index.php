@@ -35,7 +35,18 @@
         <header>
             <span id="openbtn" onclick="openNav()"> &#9776; </span>
             <h1>Weather Pi</h1>
+            <form method="get" id="nodeForm">
+                <select name='node' id="nodeSelect" onchange='if(this.value != 0) { this.form.submit(); }'>
+                    <?php foreach ($nodeIDArr as $nodeID) {
+                        $selected = ($_GET['node'] === $nodeID) ? "selected" : "";
+                        echo <<<EOD
+                            <option value="$nodeID" $selected>$nodeID</option>
+                        EOD;
+                    } ?>
+                </select>
+            </form>
         </header>
+        
         <div class="container">
             <!-- All the charts -->
             <div class="charts">
