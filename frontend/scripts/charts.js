@@ -75,6 +75,11 @@ const temperatureConfig = {
     scales: {
       y: {
         beginAtZero: true,
+        ticks: {
+          callback: function (value) {
+            return value + "°C";
+          },
+        },
       },
     },
   },
@@ -84,9 +89,16 @@ const humidityConfig = {
   type: "line",
   data: humidityData,
   options: {
+    scaleLabel: "<%=value%>%",
     scales: {
       y: {
         beginAtZero: true,
+        max: 100,
+        ticks: {
+          callback: function (value) {
+            return value + "%";
+          },
+        },
       },
     },
   },
@@ -101,6 +113,11 @@ const pressureConfig = {
         beginAtZero: false,
         min: 950,
         max: 1050,
+        ticks: {
+          callback: function (value) {
+            return value + " mb";
+          },
+        },
       },
     },
   },
