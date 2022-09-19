@@ -59,6 +59,9 @@
                 <div class="chart">
                     <canvas id="pressureChart"></canvas>
                 </div>
+                <div class="chart">
+                    <canvas id="luxChart"></canvas>
+                </div>
             </div>
 
             <!-- Footer -->

@@ -67,6 +67,19 @@ const pressureData = {
   ],
 };
 
+const luxData = {
+  labels: timestampArr24H,
+  datasets: [
+    {
+      label: "Light Intensity 24H",
+      data: luxDataArr,
+      fill: false,
+      borderColor: "rgb(153, 102, 255)",
+      tension: 0.1,
+    },
+  ],
+};
+
 // Config Block
 const temperatureConfig = {
   type: "line",
@@ -123,6 +136,24 @@ const pressureConfig = {
   },
 };
 
+const luxConfig = {
+  type: "line",
+  data: luxData,
+  options: {
+    scaleLabel: "<%=value%>%",
+    scales: {
+      y: {
+        beginAtZero: false,
+        ticks: {
+          callback: function (value) {
+            return value + " lux";
+          },
+        },
+      },
+    },
+  },
+};
+
 // Render Block
 const temperatureChart = new Chart(
   document.getElementById("temperatureChart"),
@@ -138,3 +169,5 @@ const pressureChart = new Chart(
   document.getElementById("pressureChart"),
   pressureConfig
 );
+
+const luxChart = new Chart(document.getElementById("luxChart"), luxConfig);

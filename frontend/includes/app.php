@@ -33,7 +33,7 @@ $activeNodeID = (!empty($_GET['node'])) ? $_GET['node'] : $defaultNodeID;
 
 
 // Execute SQL command
-$sql = "SELECT * FROM `sensor_data_alt` WHERE time >= NOW() - INTERVAL 1470 MINUTE AND node_id = '$activeNodeID'";
+$sql = "SELECT * FROM `sensor_data_alt` WHERE time >= NOW() - INTERVAL 1499 MINUTE AND node_id = '$activeNodeID'";
 $result = $conn->query($sql);
 
 // Extract data into arrays if data exists
@@ -42,6 +42,7 @@ if ($result->num_rows > 0) {
     $humidityDataArr = array();
     $pressureDataArr = array();
     $pressureSLDataArr = array();
+    $luxDataArr = array();
     $timestampArr = array();
 
     // output data of each row
@@ -50,6 +51,7 @@ if ($result->num_rows > 0) {
         $humidityDataArr[] = $row['humidity'];
         $pressureDataArr[] = $row['pressure'];
         $pressureSLDataArr[] = 1013.2;
+        $luxDataArr[] = $row['light'];
         $timestampArr[] = $row['time'];
     }
 } else {
@@ -68,5 +70,6 @@ $conn->close();
     const humidityDataArr = <?php echo json_encode($humidityDataArr) ?>;
     const pressureDataArr = <?php echo json_encode($pressureDataArr) ?>;
     const pressureSLDataArr = <?php echo json_encode($pressureSLDataArr) ?>;
+    const luxDataArr = <?php echo json_encode($luxDataArr) ?>;
     const timestampArr = <?php echo json_encode($timestampArr) ?>;
 </script>
