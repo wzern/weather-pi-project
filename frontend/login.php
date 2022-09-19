@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Page Title -->
-    <title>⛅ ESPi Weather Station</title>
+    <title>Login | ⛅ ESPi Weather Station</title>
 
     <!-- Dependencies -->
     <link rel="stylesheet" href="css/styles.css">
@@ -28,20 +28,10 @@
         <header>
             <span id="openbtn" onclick="openNav()"> &#9776; </span>
             <h1>⛅ ESPi Weather</h1>
-            <form method="get" id="nodeForm">
-                <select name='node' id="nodeSelect" onchange='if(this.value != 0) { this.form.submit(); }'>
-                    <?php foreach ($nodeIDArr as $nodeID) {
-                        $selected = ($_GET['node'] === $nodeID) ? "selected" : "";
-                        echo <<<EOD
-                            <option value="$nodeID" $selected>$nodeID</option>
-                        EOD;
-                    } ?>
-                </select>
-            </form>
         </header>
         
         <div class="container" id="container">
-            <?php include 'includes/charts.html';?>
+            <?php require_once 'includes/login.php'?>
         </div>
 
         <?php include 'includes/footer.html'; ?>
