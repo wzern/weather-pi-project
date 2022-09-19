@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://cdn.lansec.net/wzernikow/github/weather-pi-project/main.png" width=900" alt="hero image" />
+  <img src="https://cdn.lansec.net/wzernikow/github/weather-pi-project/hero-img.png" width=900" alt="hero image" />
 </div>
 <div align="center">
   <h1 align="center">⛅ ESPi Weather Station | 2022</h1>
