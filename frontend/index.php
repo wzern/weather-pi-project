@@ -34,7 +34,7 @@
     <main id="main">
         <header>
             <span id="openbtn" onclick="openNav()"> &#9776; </span>
-            <h1>⛅ ESPi Weather Station</h1>
+            <h1>⛅ ESPi Weather</h1>
             <form method="get" id="nodeForm">
                 <select name='node' id="nodeSelect" onchange='if(this.value != 0) { this.form.submit(); }'>
                     <?php foreach ($nodeIDArr as $nodeID) {
