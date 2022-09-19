@@ -41,7 +41,7 @@ const humidityData = {
       label: "Humidity 24H",
       data: humidityDataArr,
       fill: false,
-      borderColor: "rgb(255, 159, 64)",
+      borderColor: "rgb(128, 255, 102)",
       tension: 0.1,
     },
   ],
@@ -74,7 +74,25 @@ const luxData = {
       label: "Light Intensity 24H",
       data: luxDataArr,
       fill: false,
-      borderColor: "rgb(153, 102, 255)",
+      borderColor: "rgb(255, 250, 102)",
+      tension: 0.1,
+    },
+    {
+      label: "Min Avg Daylight",
+      data: luxDataMinAvgArr,
+      fill: {
+        target: 2,
+        above: "rgba(255, 199, 102, 0.02)",
+        below: "rgba(255, 199, 102, 0.02)",
+      },
+      borderColor: "rgba(255, 199, 102, 0.2)",
+      tension: 0.1,
+    },
+    {
+      label: "Max Avg Daylight",
+      data: luxDataMaxAvgArr,
+      fill: false,
+      borderColor: "rgba(255, 199, 102, 0.2)",
       tension: 0.1,
     },
   ],
@@ -143,7 +161,7 @@ const luxConfig = {
     scaleLabel: "<%=value%>%",
     scales: {
       y: {
-        beginAtZero: false,
+        beginAtZero: true,
         ticks: {
           callback: function (value) {
             return value + " lux";

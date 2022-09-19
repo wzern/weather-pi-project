@@ -52,6 +52,8 @@ if ($result->num_rows > 0) {
         $pressureDataArr[] = $row['pressure'];
         $pressureSLDataArr[] = 1013.2;
         $luxDataArr[] = $row['light'];
+        $luxDataMinAvgArr[] = 32000;
+        $luxDataMaxAvgArr[] = 100000;
         $timestampArr[] = $row['time'];
     }
 } else {
@@ -71,5 +73,7 @@ $conn->close();
     const pressureDataArr = <?php echo json_encode($pressureDataArr) ?>;
     const pressureSLDataArr = <?php echo json_encode($pressureSLDataArr) ?>;
     const luxDataArr = <?php echo json_encode($luxDataArr) ?>;
+    const luxDataMinAvgArr = <?php echo json_encode($luxDataMinAvgArr) ?>;
+    const luxDataMaxAvgArr = <?php echo json_encode($luxDataMaxAvgArr) ?>;
     const timestampArr = <?php echo json_encode($timestampArr) ?>;
 </script>
