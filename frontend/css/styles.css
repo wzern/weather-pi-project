@@ -102,6 +102,7 @@ header h1 {
 }
 
 .container {
+  min-height: 86vh;
   width: 100%;
 }
 
