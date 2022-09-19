@@ -2,7 +2,7 @@
   <img src="https://cdn.lansec.net/wzernikow/github/weather-pi-project/main.png" width=900" alt="hero image" />
 </div>
 <div align="center">
-  <h1 align="center">Weather Pi Project | 2022</h1>
+  <h1 align="center">⛅ ESPi Weather Station | 2022</h1>
   <h3>Powered by ESP8266 and Raspberry Pi</h3>
 </div>
 <p align="center">
