@@ -1,3 +1,8 @@
+:root {
+  --github-nav: #161b22;
+  --github-body: #0d1117;
+}
+
 * {
   transition: all 0.3s;
   margin: 0;
@@ -9,7 +14,7 @@
 body {
   font-family: "Lato", sans-serif;
   color: azure;
-  background-color: #202324;
+  background-color: var(--github-body);
 }
 
 .sidenav {
@@ -19,7 +24,7 @@ body {
   z-index: 1;
   top: 0;
   left: 0;
-  background-color: #111;
+  background-color: var(--github-nav);
   overflow-x: hidden;
   transition: 0.5s;
   padding-top: 60px;
@@ -61,7 +66,7 @@ body {
   margin: 20px;
   padding: 6px 15px;
   color: azure;
-  background-color: #202324;
+  background-color: var(--github-nav);
   border: 1px solid gray;
   border-radius: 1.5em;
   -webkit-appearance: none;
@@ -71,7 +76,7 @@ body {
 
 #nodeSelect option {
   color: azure;
-  background-color: #202324;
+  background-color: var(--github-nav);
 }
 
 main {
