@@ -33,7 +33,7 @@ $activeNodeID = (!empty($_GET['node'])) ? $_GET['node'] : $defaultNodeID;
 
 
 // Execute SQL command
-$sql = "SELECT * FROM `sensor_data_alt` WHERE time >= NOW() - INTERVAL 1 DAY AND node_id = '$activeNodeID'";
+$sql = "SELECT * FROM `sensor_data_alt` WHERE time >= NOW() - INTERVAL 1470 MINUTE AND node_id = '$activeNodeID'";
 $result = $conn->query($sql);
 
 // Extract data into arrays if data exists
