@@ -18,6 +18,18 @@ function formatAMPM(date) {
   return strTime;
 }
 
+// adds commas to large numbers to make it easier to recognise amount of digits e.g. 2000000 -> 2,000,000
+function commafy(num) {
+  var str = num.toString().split(".");
+  if (str[0].length >= 4) {
+    str[0] = str[0].replace(/(\d)(?=(\d{3})+$)/g, "$1,");
+  }
+  if (str[1] && str[1].length >= 5) {
+    str[1] = str[1].replace(/(\d{3})/g, "$1 ");
+  }
+  return str.join(".");
+}
+
 timestampArr24H = timestampArr.map((i) => formatAMPM(roundHour(new Date(i))));
 
 // Data Block
@@ -146,7 +158,7 @@ const pressureConfig = {
         max: 1050,
         ticks: {
           callback: function (value) {
-            return value + " hPa";
+            return commafy(value) + " hPa";
           },
         },
       },
@@ -164,7 +176,7 @@ const luxConfig = {
         beginAtZero: true,
         ticks: {
           callback: function (value) {
-            return value + " lux";
+            return commafy(value) + " lux";
           },
         },
       },
