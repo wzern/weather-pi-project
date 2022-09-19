@@ -1,18 +1,21 @@
 #include <ESP8266WiFi.h>
 #include <Adafruit_BMP085.h>
 #include "DHT.h"
+#include <Wire.h>
+#include <BH1750.h>
 
 #define DHTTYPE DHT11   // DHT 11
 #define dht_dpin 0      //GPIO-0 D3 pin of nodemcu
 
-const char* ssid     = "Redacted";
-const char* password = "Redacted";
-const char* host = "Redacted";
-const char* api_key = "Redacted";
-const char* node_id = "Redacted";
+const char* ssid     = "SSID";
+const char* password = "Password";
+const char* host = "api.example.com";
+const char* api_key = "APIToken";
+const char* node_id = "ESP8266";
 const int httpPort = 443;
 
 DHT dht(dht_dpin, DHTTYPE);
+BH1750 lightMeter;
 Adafruit_BMP085 bmp;
 
 void setup() {
@@ -24,6 +27,9 @@ void setup() {
   
   dht.begin();
   delay(10);
+
+  Wire.begin();
+  lightMeter.begin();
 
   Serial.println();
   Serial.print("Connecting to ");
@@ -60,6 +66,7 @@ void loop() {
   float h = dht.readHumidity(); //Humidity level
   float t = dht.readTemperature(); //Temperature in celcius
   float p = bmp.readPressure();
+  float lux = lightMeter.readLightLevel();
 
   // We now create a URI for the request
   String url = "/weather-pi-project/backend/api/import.php/";
@@ -74,7 +81,7 @@ void loop() {
   url += "&pressure=";
   url += String(p/100);
   url += "&light=";
-  url += "N/A";
+  url += String(lux);
 
   Serial.print("Requesting URL: ");
   Serial.println(url);
