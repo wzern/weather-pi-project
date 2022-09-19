@@ -115,7 +115,7 @@ const pressureConfig = {
         max: 1050,
         ticks: {
           callback: function (value) {
-            return value + " mb";
+            return value + " hPa";
           },
         },
       },
