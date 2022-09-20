@@ -82,6 +82,43 @@ body {
   background-color: var(--github-nav);
 }
 
+#loginForm {
+  margin: 24vh auto;
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+}
+
+#loginForm input {
+  font-size: 18px;
+  border-radius: 50px;
+  border: 1px solid #f1f1f1;
+  padding: 10px 15px;
+  margin: 10px 0;
+  color: #f1f1f1;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+#loginForm input[type="submit"] {
+  cursor: pointer;
+  background: linear-gradient(
+    to bottom right,
+    rgb(255, 138, 102),
+    rgb(255, 245, 102)
+  );
+  border: none;
+  font-weight: bold;
+  color: var(--github-nav);
+}
+
+#loginForm input[type="submit"]:hover {
+  opacity: 0.6;
+}
+
+#loginH1 {
+  margin: auto;
+}
+
 main {
   position: relative;
   display: flex;
@@ -105,7 +142,7 @@ header h1 {
 }
 
 .container {
-  min-height: 86vh;
+  min-height: calc(85vh - 20px);
   width: 100%;
 }
 

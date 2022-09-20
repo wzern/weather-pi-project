@@ -1,5 +1,5 @@
-<h1>Login</h1>
-<form action="./authenticate.php" method="post">
+<form id="loginForm" action="./authenticate.php" method="post">
+  <h1 id="loginH1">Admin Login</h1>
   <label for="username">
     <i class="fas fa-user"></i>
   </label>
