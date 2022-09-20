@@ -50,10 +50,10 @@
         </header>
 
         <div class="container" id="container">
-            <?php include 'includes/charts.html';?>
+            <?php require_once 'includes/charts.php';?>
         </div>
 
-        <?php include 'includes/footer.html'; ?>
+        <?php require_once 'includes/footer.php'; ?>
     </main>
 
     <!-- Render the charts with charts.js script -->

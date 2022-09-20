@@ -42,7 +42,7 @@ if (!isset($_SESSION['loggedin'])) {
             Settings
         </div>
 
-        <?php include 'includes/footer.html'; ?>
+        <?php require_once 'includes/footer.php'; ?>
     </main>
 
     <!-- Render the charts with charts.js script -->
