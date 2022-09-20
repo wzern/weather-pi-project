@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/styles.css">
 
     <script src="scripts/nav.js"></script>
+    <script src="scripts/functions.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 </head>
@@ -28,7 +29,7 @@
         <header>
             <span id="openbtn" onclick="openNav()"> &#9776; </span>
             <h1>⛅ ESPi Weather</h1>
-            <form method="get" id="nodeForm">
+            <form method="get" id="optForm">
                 <select name='node' id="nodeSelect" onchange='if(this.value != 0) { this.form.submit(); }'>
                     <?php foreach ($nodeIDArr as $nodeID) {
                         $selected = ($_GET['node'] === $nodeID) ? "selected" : "";
@@ -37,9 +38,17 @@
                         EOD;
                     } ?>
                 </select>
+                <select name='chartPeriod' id="chartPeriodSelect" onchange='if(this.value != 0) { this.form.submit(); }'>
+                    <?php foreach ($chartPeriods as $chartPeriod) {
+                        $selected = ($_GET['chartPeriod'] === $chartPeriod) ? "selected" : "";
+                        echo <<<EOD
+                            <option value="$chartPeriod" $selected>$chartPeriod</option>
+                        EOD;
+                    } ?>
+                </select>
             </form>
         </header>
-        
+
         <div class="container" id="container">
             <?php include 'includes/charts.html';?>
         </div>

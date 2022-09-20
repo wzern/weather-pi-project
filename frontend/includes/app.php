@@ -32,8 +32,36 @@ $defaultNodeID = (isset($nodeIDArr[0])) ? $nodeIDArr[0] : "Default";
 $activeNodeID = (!empty($_GET['node'])) ? $_GET['node'] : $defaultNodeID;
 
 
+$chartPeriods = ['Last 24 Hours', 'Last 48 Hours', 'Last 7 Days'];
+$selectedPeriod = $_GET['chartPeriod'];
+
+if (!empty($selectedPeriod)) {
+    switch ($selectedPeriod) {
+        case 'Last 24 Hours':
+            $periodStr = 'time >= NOW() - INTERVAL 1499 MINUTE AND';
+            $timeFormatStr = 'timestampRawArr.map((i) => formatAMPM(roundHour(new Date(i))));';
+            break;
+        case 'Last 48 Hours':
+            $periodStr = 'time >= NOW() - INTERVAL 2939 MINUTE AND';
+            $timeFormatStr = 'timestampRawArr.map((i) => formatDayAMPM(roundHour(new Date(i))));';
+            break;
+        case 'Last 7 Days':
+            $periodStr = 'time >= NOW() - INTERVAL 10079 MINUTE AND';
+            $timeFormatStr = 'timestampRawArr.map((i) => formatDayAMPM(roundHour(new Date(i))));';
+            break;
+        default:
+            $periodStr = 'time >= NOW() - INTERVAL 1499 MINUTE AND';
+            $timeFormatStr = 'timestampRawArr.map((i) => formatAMPM(roundHour(new Date(i))));';
+      } 
+} else {
+    $periodStr = 'time >= NOW() - INTERVAL 1499 MINUTE AND';
+    $timeFormatStr = 'timestampRawArr.map((i) => formatAMPM(roundHour(new Date(i))));';
+}
+
+
+
 // Execute SQL command
-$stmt = $conn->prepare('SELECT * FROM `sensor_data_alt` WHERE time >= NOW() - INTERVAL 1499 MINUTE AND node_id = ?');
+$stmt = $conn->prepare('SELECT * FROM `sensor_data_alt` WHERE ' . $periodStr . ' node_id = ?');
 $stmt->bind_param('s', $activeNodeID); // 's' specifies the variable type => 'string'
 $stmt->execute();
 
@@ -78,5 +106,6 @@ $conn->close();
     const luxDataArr = <?php echo json_encode($luxDataArr) ?>;
     const luxDataMinAvgArr = <?php echo json_encode($luxDataMinAvgArr) ?>;
     const luxDataMaxAvgArr = <?php echo json_encode($luxDataMaxAvgArr) ?>;
-    const timestampArr = <?php echo json_encode($timestampArr) ?>;
+    const timestampRawArr = <?php echo json_encode($timestampArr) ?>;
+    timestampArr = <?=$timeFormatStr?>;
 </script>

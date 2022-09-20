@@ -1,43 +1,9 @@
-// Round a timestamp to nearest hour
-function roundHour(date) {
-  date.setHours(date.getHours() + Math.round(date.getMinutes() / 60));
-  date.setMinutes(0, 0, 0); // Resets also seconds and milliseconds
-
-  return date;
-}
-
-// Convert a timestamp to AM/PM format
-function formatAMPM(date) {
-  var hours = date.getHours();
-  var minutes = date.getMinutes();
-  var ampm = hours >= 12 ? "pm" : "am";
-  hours = hours % 12;
-  hours = hours ? hours : 12; // the hour '0' should be '12'
-  minutes = minutes < 10 ? "0" + minutes : minutes;
-  var strTime = hours + ":" + minutes + " " + ampm;
-  return strTime;
-}
-
-// adds commas to large numbers to make it easier to recognise amount of digits e.g. 2000000 -> 2,000,000
-function commafy(num) {
-  var str = num.toString().split(".");
-  if (str[0].length >= 4) {
-    str[0] = str[0].replace(/(\d)(?=(\d{3})+$)/g, "$1,");
-  }
-  if (str[1] && str[1].length >= 5) {
-    str[1] = str[1].replace(/(\d{3})/g, "$1 ");
-  }
-  return str.join(".");
-}
-
-timestampArr24H = timestampArr.map((i) => formatAMPM(roundHour(new Date(i))));
-
 // Data Block
 const temperatureData = {
-  labels: timestampArr24H,
+  labels: timestampArr,
   datasets: [
     {
-      label: "Temperature 24H",
+      label: "Temperature",
       data: temperatureDataArr,
       fill: false,
       borderColor: "rgb(255, 99, 132)",
@@ -47,10 +13,10 @@ const temperatureData = {
 };
 
 const humidityData = {
-  labels: timestampArr24H,
+  labels: timestampArr,
   datasets: [
     {
-      label: "Humidity 24H",
+      label: "Humidity",
       data: humidityDataArr,
       fill: false,
       borderColor: "rgb(128, 255, 102)",
@@ -60,17 +26,17 @@ const humidityData = {
 };
 
 const pressureData = {
-  labels: timestampArr24H,
+  labels: timestampArr,
   datasets: [
     {
-      label: "Pressure 24H",
+      label: "Atmospheric Pressure",
       data: pressureDataArr,
       fill: false,
       borderColor: "rgb(75, 192, 192)",
       tension: 0.1,
     },
     {
-      label: "Pressure at Sea level",
+      label: "Avg. AP at Sea level",
       data: pressureSLDataArr,
       fill: false,
       borderColor: "rgb(54, 162, 235)",
@@ -80,10 +46,10 @@ const pressureData = {
 };
 
 const luxData = {
-  labels: timestampArr24H,
+  labels: timestampArr,
   datasets: [
     {
-      label: "Light Intensity 24H",
+      label: "Light Intensity",
       data: luxDataArr,
       fill: false,
       borderColor: "rgb(255, 250, 102)",
@@ -154,8 +120,8 @@ const pressureConfig = {
     scales: {
       y: {
         beginAtZero: false,
-        // min: 950,
-        // max: 1050,
+        min: 950,
+        max: 1050,
         ticks: {
           callback: function (value) {
             return commafy(value) + " hPa";

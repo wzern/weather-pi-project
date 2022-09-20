@@ -56,14 +56,16 @@ body {
   cursor: pointer;
 }
 
-#nodeForm {
+#optForm {
   position: absolute;
   right: 0;
   padding: 0;
+  margin: 20px;
 }
 
-#nodeSelect {
-  margin: 20px;
+#nodeSelect,
+#chartPeriodSelect {
+  margin: 10px;
   padding: 6px 15px;
   color: azure;
   background-color: var(--github-nav);
@@ -72,6 +74,7 @@ body {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  text-align: center;
 }
 
 #nodeSelect option {
@@ -146,16 +149,18 @@ footer a:hover {
   }
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 900px) {
   .container {
     margin-top: 20px;
   }
-  #nodeForm {
-    position: absolute;
+  #optForm {
+    align-items: center;
+    justify-content: center;
+    display: flex;
     top: 42px;
-    right: 50%;
-    transform: translateX(50%);
+    width: 100%;
     padding: 0;
+    margin: 20px 0;
   }
   .sidenav {
     padding-top: 15px;
