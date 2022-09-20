@@ -154,8 +154,8 @@ const pressureConfig = {
     scales: {
       y: {
         beginAtZero: false,
-        min: 950,
-        max: 1050,
+        // min: 950,
+        // max: 1050,
         ticks: {
           callback: function (value) {
             return commafy(value) + " hPa";
