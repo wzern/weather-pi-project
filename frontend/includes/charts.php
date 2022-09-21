@@ -1,3 +1,5 @@
+<?php //This is here so GitHub recognises the file as 'PHP' not 'Hack' ?>
+
 <!-- All the charts -->
 <div class="charts">
   <div class="chart">
