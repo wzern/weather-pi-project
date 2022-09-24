@@ -6,16 +6,16 @@
   <h3>Powered by ESP8266 and Raspberry Pi</h3>
 </div>
 <p align="center">
-  <a href="https://github.com/wzerp/weather-pi-project/commits/main" target="_blank">
-    <img src="https://img.shields.io/github/last-commit/wzerp/weather-pi-project?" alt="Badge showing when the last commit was made"/>
+  <a href="https://github.com/wzern/weather-pi-project/commits/main" target="_blank">
+    <img src="https://img.shields.io/github/last-commit/wzern/weather-pi-project?" alt="Badge showing when the last commit was made"/>
   </a>
 
-  <a href="https://github.com/wzerp/weather-pi-project/issues" target="_blank">
-    <img src="https://img.shields.io/github/issues/wzerp/weather-pi-project?" alt="Badge showing the total of project issues"/>
+  <a href="https://github.com/wzern/weather-pi-project/issues" target="_blank">
+    <img src="https://img.shields.io/github/issues/wzern/weather-pi-project?" alt="Badge showing the total of project issues"/>
   </a>
   
-  <a href="https://github.com/wzerp/weather-pi-project/blob/main/LICENSE" target="_blank">
-    <img alt="Badge showing project license type" src="https://img.shields.io/github/license/wzerp/weather-pi-project?color=f85149">
+  <a href="https://github.com/wzern/weather-pi-project/blob/main/LICENSE" target="_blank">
+    <img alt="Badge showing project license type" src="https://img.shields.io/github/license/wzern/weather-pi-project?color=f85149">
   </a>
 </p>
 <div align="center">
@@ -54,7 +54,7 @@ This is a year 13 digital and electronics project in which we build a weather st
 <h3>This project is under license from MIT.</h3>
 <p>A short and simple permissive license with conditions only requiring preservation of copyright and license notices. Licensed works, modifications, and larger works may be distributed under different terms and without source code.</p>
 
-<p>For more details, see the <a href="https://github.com/wzerp/weather-pi-project/blob/main/LICENSE">LICENSE</a> file.</p>
+<p>For more details, see the <a href="https://github.com/wzern/weather-pi-project/blob/main/LICENSE">LICENSE</a> file.</p>
 
 <h2 id="author">🙋‍♂️ Author</h2>
-<p>Made with ❤️ by <a href="https://github.com/wzerp">William Zernikow</a></p>
+<p>Made with ❤️ by <a href="https://github.com/wzern">William Zernikow</a></p>
