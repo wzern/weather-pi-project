@@ -119,6 +119,13 @@ body {
   margin: auto;
 }
 
+#loginH2 {
+  font-size: 14px;
+  color: rgb(189, 23, 23);
+  text-align: center;
+  width: 100%;
+}
+
 main {
   position: relative;
   display: flex;

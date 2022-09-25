@@ -26,7 +26,7 @@ if ($resultNode->num_rows > 0) {
         $nodeIDArr[] = $row['node_id'];
     }
 } else {
-    echo "No Nodes";
+    echo "<center style='position: absolute; top: 10vh; left: 50%; transform: translateX(-50%)'>No devices were found</center>";
 }
 
 // Define a default option incase the user has not specified a node
@@ -97,7 +97,7 @@ if ($result->num_rows > 0) {
         $timestampArr[] = $row['time'];
     }
 } else {
-    echo "No Data";
+    echo "<center style='position: absolute; top: 10vh; left: 50%; transform: translateX(-50%)'>No data was found for this device</center>";
 }
 
 // Close Connection

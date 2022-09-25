@@ -11,12 +11,14 @@ $dbname = "weather-pi-project";
 $con = mysqli_connect($servername, $username, $password, $dbname);
 if ( mysqli_connect_errno() ) {
 	// If there is an error with the connection, stop the script and display the error.
+    header('Location: ./login.php?err=Failed to connect to MySQL');
 	exit('Failed to connect to MySQL: ' . mysqli_connect_error());
 }
 
 // Check if the data from the login form was submitted
 if ( !isset($_POST['username'], $_POST['password']) ) {
 	// Could not get the data that should have been sent.
+    header('Location: ./login.php?err=Please fill both the username and password fields!');
 	exit('Please fill both the username and password fields!');
 }
 
@@ -40,11 +42,11 @@ if ($stmt = $con->prepare('SELECT id, password FROM accounts WHERE username = ?'
             header('Location: ./' . $_POST['return']);
         } else {
             // Incorrect password
-            echo 'Incorrect username and/or password!';
+            header('Location: ./login.php?err=Incorrect username and/or password!');
         }
     } else {
         // Incorrect username
-        echo 'Incorrect username and/or password!';
+        header('Location: ./login.php?err=Incorrect username and/or password!');
     }
 
 	$stmt->close();
