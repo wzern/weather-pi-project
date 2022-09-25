@@ -1,6 +1,6 @@
 <?php //This is here so GitHub recognises the file as 'PHP' not 'Hack' ?>
 
-<!-- All the charts -->
+<!-- Create div for each chart -->
 <div class="charts">
   <div class="chart">
     <canvas id="temperatureChart"></canvas>

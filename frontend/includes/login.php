@@ -1,3 +1,4 @@
+<!-- Login form for admin authentication -->
 <form id="loginForm" action="./authenticate.php" method="post">
   <h1 id="loginH1">Admin Login</h1>
   <label for="username">

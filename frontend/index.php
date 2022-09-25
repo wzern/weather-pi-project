@@ -31,6 +31,7 @@
             <h1>⛅ ESPi Weather</h1>
             <form method="get" id="optForm">
                 <select name='node' id="nodeSelect" onchange='if(this.value != 0) { this.form.submit(); }'>
+                    <!-- Load each node as a selectable option in the dropdown -->
                     <?php foreach ($nodeIDArr as $nodeID) {
                         $selected = ($_GET['node'] === $nodeID) ? "selected" : "";
                         echo <<<EOD
@@ -39,6 +40,7 @@
                     } ?>
                 </select>
                 <select name='chartPeriod' id="chartPeriodSelect" onchange='if(this.value != 0) { this.form.submit(); }'>
+                <!-- Load each time period as a selectable option in the dropdown -->
                     <?php foreach ($chartPeriods as $chartPeriod) {
                         $selected = ($_GET['chartPeriod'] === $chartPeriod) ? "selected" : "";
                         echo <<<EOD
@@ -49,10 +51,12 @@
             </form>
         </header>
 
+        <!-- Chart container element -->
         <div class="container" id="container">
             <?php require_once 'includes/charts.php';?>
         </div>
-
+        
+        <!-- Include footer -->
         <?php require_once 'includes/footer.php'; ?>
     </main>
 

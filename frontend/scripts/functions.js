@@ -1,4 +1,4 @@
-// Round a timestamp to nearest hour
+// Round a JS timestamp to nearest hour
 function roundHour(date) {
   date.setHours(date.getHours() + Math.round(date.getMinutes() / 60));
   date.setMinutes(0, 0, 0); // Resets also seconds and milliseconds
@@ -39,7 +39,7 @@ function formatDayAMPM(date) {
   return strTime;
 }
 
-// adds commas to large numbers to make it easier to recognise amount of digits e.g. 2000000 -> 2,000,000
+// Adds commas to large numbers to make it easier to recognise amount of digits e.g. 2000000 -> 2,000,000
 function commafy(num) {
   var str = num.toString().split(".");
   if (str[0].length >= 4) {

@@ -1,13 +1,14 @@
 <?php
-// Define variables
+// Define database connection settings
 $servername = "localhost";
 $username = "username";
 $password = "password";
 $dbname = "weather-pi-project";
 
-// Create connection
+// Create a connection to the database server
 $conn = new mysqli($servername, $username, $password, $dbname);
-// Check connection
+
+// Check the server connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -28,13 +29,18 @@ if ($resultNode->num_rows > 0) {
     echo "No Nodes";
 }
 
+// Define a default option incase the user has not specified a node
 $defaultNodeID = (isset($nodeIDArr[0])) ? $nodeIDArr[0] : "Default";
 $activeNodeID = (!empty($_GET['node'])) ? $_GET['node'] : $defaultNodeID;
 
-
+// Define the differet time ranges
 $chartPeriods = ['Last 24 Hours', 'Last 48 Hours', 'Last 7 Days'];
 $selectedPeriod = $_GET['chartPeriod'];
 
+// Convert the selected time range to minutes by converting to hours, adding one hour, then subtracting 1 minute. 
+// This is so that the chart shows the last <x> amount of hours but also the current time.
+// E.g: Selected 24 hours, add one hour (25), convet to minutes (1500), subtract one minute -> 1499 minutes.
+// 1499 minutes on the chart might look something like 3pm yesterday to 3pm today rather than 4pm yesterday to 3pm today.
 if (!empty($selectedPeriod)) {
     switch ($selectedPeriod) {
         case 'Last 24 Hours':
@@ -53,7 +59,10 @@ if (!empty($selectedPeriod)) {
             $periodStr = 'time >= NOW() - INTERVAL 1499 MINUTE AND';
             $timeFormatStr = 'timestampRawArr.map((i) => formatAMPM(roundHour(new Date(i))));';
       } 
-} else {
+} 
+
+// Default to 24 hours
+else {
     $periodStr = 'time >= NOW() - INTERVAL 1499 MINUTE AND';
     $timeFormatStr = 'timestampRawArr.map((i) => formatAMPM(roundHour(new Date(i))));';
 }
@@ -96,9 +105,8 @@ $conn->close();
 
 ?> 
 
-<!-- Set javascript data arrays -->
 <script>
-    // Setup Block
+    // Setup Block used to parse the PHP arrays into javascipt arrays
     const temperatureDataArr = <?php echo json_encode($temperatureDataArr) ?>;
     const humidityDataArr = <?php echo json_encode($humidityDataArr) ?>;
     const pressureDataArr = <?php echo json_encode($pressureDataArr) ?>;

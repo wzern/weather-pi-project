@@ -42,6 +42,7 @@ if (!isset($_SESSION['loggedin'])) {
             Settings
         </div>
 
+        <!-- Include footer -->
         <?php require_once 'includes/footer.php'; ?>
     </main>
 

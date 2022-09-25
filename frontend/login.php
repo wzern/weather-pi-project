@@ -34,6 +34,7 @@
             <?php require_once 'includes/login.php'?>
         </div>
 
+        <!-- Include footer -->
         <?php require_once 'includes/footer.php'; ?>
     </main>
 

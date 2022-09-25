@@ -1,4 +1,4 @@
-// Data Block
+// Define the variables used in each chart
 const temperatureData = {
   labels: timestampArr,
   datasets: [
@@ -76,7 +76,7 @@ const luxData = {
   ],
 };
 
-// Config Block
+// Define the settings used for each chart
 const temperatureConfig = {
   type: "line",
   data: temperatureData,
@@ -150,7 +150,7 @@ const luxConfig = {
   },
 };
 
-// Render Block
+// Render the charts in their corresponding divs
 const temperatureChart = new Chart(
   document.getElementById("temperatureChart"),
   temperatureConfig
