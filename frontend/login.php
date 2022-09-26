@@ -27,7 +27,7 @@
     <main id="main">
         <header>
             <span id="openbtn" onclick="openNav()"> &#9776; </span>
-            <h1>⛅ ESPi Weather</h1>
+            <h1><a href="./">⛅ ESPi Weather</a></h1>
         </header>
         
         <div class="container" id="container">

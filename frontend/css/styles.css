@@ -148,6 +148,11 @@ header h1 {
   text-align: center;
 }
 
+header h1 a {
+  text-decoration: none;
+  color: #f1f1f1;
+}
+
 .container {
   min-height: calc(85vh - 20px);
   width: 100%;

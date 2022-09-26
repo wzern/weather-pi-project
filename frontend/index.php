@@ -28,7 +28,7 @@
     <main id="main">
         <header>
             <span id="openbtn" onclick="openNav()"> &#9776; </span>
-            <h1>⛅ ESPi Weather</h1>
+            <h1><a href="./">⛅ ESPi Weather</a></h1>
             <form method="get" id="optForm">
                 <select name='node' id="nodeSelect" onchange='if(this.value != 0) { this.form.submit(); }'>
                     <!-- Load each node as a selectable option in the dropdown -->
