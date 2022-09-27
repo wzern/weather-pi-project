@@ -5,7 +5,7 @@ session_start();
 $servername = "localhost";
 $username = "username";
 $password = "password";
-$dbname = "weather-pi-project";
+$dbname = "weatherPiProject";
 
 // Create a connection to the database server
 $con = mysqli_connect($servername, $username, $password, $dbname);

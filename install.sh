@@ -42,6 +42,8 @@ function msg_error() {
     echo -e "${BFR} ${CROSS} ${RD}${msg}${CL}"
 }
 
+echo ""
+echo "------------------------------------------------------------------"
 echo "  ______  _____ _____ _     _                _                  _ "
 echo " |  ____|/ ____|  __ (_)   | |    V1.1      | |  github/wzern  | |"
 echo " | |__  | (___ | |__) |    | |__   __ _  ___| | _____ _ __   __| |"
@@ -98,7 +100,9 @@ systemctl restart apache2 &>/dev/null
 msg_ok "Enabled Apache2 rewrite module"
 
 msg_info "Preparing database"
-mysql -u root -e "CREATE DATABASE weather;"
+mysql -u root -e "CREATE DATABASE weatherPiProject;"
+mysql -u root -e "CREATE USER 'username'@'localhost' IDENTIFIED BY 'password';"
+mysql -u root -e "GRANT ALL PRIVILEGES ON weatherPiProject.* TO 'username'@'localhost' WITH GRANT OPTION;"
 mysql -u root < conf/database.sql
 msg_ok "Prepared database"
 
