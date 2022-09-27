@@ -44,16 +44,18 @@ function msg_error() {
 
 echo ""
 echo "------------------------------------------------------------------"
-echo "  ______  _____ _____ _     _                _                  _ "
-echo " |  ____|/ ____|  __ (_)   | |    V1.1      | |  github/wzern  | |"
-echo " | |__  | (___ | |__) |    | |__   __ _  ___| | _____ _ __   __| |"
-echo " |  __|  \___ \|  ___/ |   | '_ \ / _' |/ __| |/ / _ \ '_ \ / _' |"
+echo "  ______  _____ _____ _     ____             _                  _ "
+echo " |  ____|/ ____|  __ (_)   |  _ \    V1.1   | |  github/wzern  | |"
+echo " | |__  | (___ | |__) |    | |_) | __ _  ___| | _____ _ __   __| |"
+echo " |  __|  \___ \|  ___/ |   |  _ < / _' |/ __| |/ / _ \ '_ \ / _' |"
 echo " | |____ ____) | |   | |   | |_) | (_| | (__|   <  __/ | | | (_| |"
-echo " |______|_____/|_|   |_|   |_.__/ \__,_|\___|_|\_\___|_| |_|\__,_|"
+echo " |______|_____/|_|   |_|   |____/ \__,_|\___|_|\_\___|_| |_|\__,_|"
 echo ""
 echo "------------------------------------------------------------------"
 echo ""
 echo "You are about to install the ESPi Weather Backend: Stable"
+echo "This script is designed for use on Rapsberry Pi 4s only"
+echo "However, Ubuntu 20.04 has been tested and works well"
 
 while true; do
 
@@ -122,7 +124,7 @@ msg_ok "Cleaned"
 echo ""
 echo "------------------------------------------------------------------"
 echo ""
-echo Server IP Address: $(/sbin/ip -o -4 addr list eth0 | awk '{print $4}' | cut -d/ -f1) 
+echo Server Address: https://$(/sbin/ip -o -4 addr list eth0 | awk '{print $4}' | cut -d/ -f1)/
 echo ""
 echo "------------------------------------------------------------------"
 echo ""
