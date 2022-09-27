@@ -53,7 +53,7 @@ echo " |______|_____/|_|   |_|   |_.__/ \__,_|\___|_|\_\___|_| |_|\__,_|"
 echo ""
 echo "------------------------------------------------------------------"
 echo ""
-echo "You are about to install the ESPi Backend: Stable"
+echo "You are about to install the ESPi Weather Backend: Stable"
 
 while true; do
 

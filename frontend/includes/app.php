@@ -10,7 +10,8 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 
 // Check the server connection
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    echo "<center style='position: absolute; top: 10vh; left: 50%; transform: translateX(-50%)'>Connection to the database failed</center>";
+    die();
 }
 
 // Execute SQL command
