@@ -72,7 +72,7 @@ msg_info "Updating package lists"
 apt update &>/dev/null
 msg_ok "Updated package lists"
 
-msg_info "Installing G"
+msg_info "Installing Apache2"
 apt-get install apache2 -y &>/dev/null
 msg_ok "Installed Apache2"
 
