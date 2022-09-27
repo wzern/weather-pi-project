@@ -10,11 +10,11 @@
 #define dht_dpin 0      //GPIO-0 D3 pin of nodemcu
 
 // Define variables for networking and operations
-const char* ssid     = "SSID";
-const char* password = "Password";
-const char* host = "api.example.com";
+const char* ssid     = "WiFi name";
+const char* password = "WiFi Password";
+const char* host = "xxx.xxx.xxx.xxx";
 const char* api_key = "APIToken";
-const char* node_id = "ESP8266";
+const char* node_id = "Shed ESP";
 const int httpPort = 443;
 
 // Initialise DHT, BH1750 & BMP180 sensors
@@ -77,7 +77,7 @@ void loop() {
   float lux = lightMeter.readLightLevel();
 
   // Create a URI for the request
-  String url = "/weather-pi-project/backend/api/import.php/";
+  String url = "/api/import.php/";
   url += "?api_key=";
   url += api_key;
   url += "&node_id=";
