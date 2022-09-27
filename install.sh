@@ -98,6 +98,18 @@ msg_info "Enabling Apache2 rewrite module"
 a2enmod rewrite &>/dev/null
 systemctl restart apache2 &>/dev/null
 msg_ok "Enabled Apache2 rewrite module"
+
+msg_info "Preparing database"
+mysql -u root -e "CREATE DATABASE weather;"
+mysql -u root < conf/database.sql
+msg_ok "Prepared database"
+
+
+msg_info "Initialising web interface"
+rm -rf /var/www/html/* &>/dev/null
+cp -r frontend/* /var/www/html/ &>/dev/null
+cp -r backend/* /var/www/html/ &>/dev/null
+msg_ok "Initialised web interface"
   
 msg_info "Cleaning up"
 apt-get autoremove >/dev/null
