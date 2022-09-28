@@ -11,6 +11,7 @@
     placeholder="Username"
     id="username"
     required
+    autofocus 
   />
   <label for="password">
     <i class="fas fa-lock"></i>
