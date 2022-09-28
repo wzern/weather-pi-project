@@ -95,10 +95,6 @@ msg_info "Installing Adafruit Display Library"
 pip install adafruit-circuitpython-ssd1306 &>/dev/null
 msg_ok "Installed Adafruit Display Library"
 
-msg_info "Starting display program"
-python3 /home/pi/weather-pi-project/conf/display.py &>/dev/null
-msg_ok "Started display program"
-
 msg_info "Cleaning up"
 apt-get autoremove >/dev/null
 apt-get autoclean >/dev/null
