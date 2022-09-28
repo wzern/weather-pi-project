@@ -9,8 +9,8 @@ $LIGHT = $_GET['light'];
 
 // Define database connection settings
 $servername = "localhost";
-$username = "username";
-$password = "password";
+$username = "weatherPi";
+$password = "4Iz0p3hu9nSJujKz3kPM";
 $dbname = "weatherPiProject";
 
 // Create a connection to the database server

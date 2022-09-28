@@ -102,9 +102,10 @@ systemctl restart apache2 &>/dev/null
 msg_ok "Enabled Apache2 rewrite module"
 
 msg_info "Preparing database"
+mysql -u root -e "DROP DATABASE IF EXISTS weatherPiProject;"
 mysql -u root -e "CREATE DATABASE weatherPiProject;"
-mysql -u root -e "CREATE USER 'username'@'localhost' IDENTIFIED BY 'password';"
-mysql -u root -e "GRANT ALL PRIVILEGES ON weatherPiProject.* TO 'username'@'localhost' WITH GRANT OPTION;"
+mysql -u root -e "CREATE USER IF NOT EXISTS 'weatherPi'@'localhost' IDENTIFIED BY '4Iz0p3hu9nSJujKz3kPM';"
+mysql -u root -e "GRANT ALL PRIVILEGES ON weatherPiProject.* TO 'weatherPi'@'localhost' WITH GRANT OPTION;"
 mysql -u root < conf/database.sql
 msg_ok "Prepared database"
 
@@ -112,8 +113,7 @@ msg_info "Initialising web interface"
 rm -rf /var/www/html/* &>/dev/null
 cp -r frontend/* /var/www/html/ &>/dev/null
 cp -r backend/* /var/www/html/ &>/dev/null
-mkdir /var/www/html/phpmyadmin &>/dev/null
-cp -r /usr/share/phpmyadmin/* /var/www/html/phpmyadmin/ &>/dev/null
+ln -s /usr/share/phpmyadmin /var/www/html &>/dev/null
 msg_ok "Initialised web interface"
   
 msg_info "Cleaning up"
