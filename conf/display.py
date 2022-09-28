@@ -50,23 +50,21 @@ x = 0
 # Load default font.
 font = ImageFont.load_default()
 
-no_IP = True
-
 draw.text((x, top + 0), "Searching for network", font=font, fill=255)
 disp.image(image)
 disp.show()
 time.sleep(1)
-while no_IP:
+
+while True:
     # Clear display.
-	draw.rectangle((0, 0, width, height), outline=0, fill=0)
-	disp.fill(0)
-	disp.show()
-	ip_addr = get_ip()
-	if ip_addr:
-		draw.text((x, top + 0), "IP: " + ip_addr, font=font, fill=255)
-		no_IP = False
-	else:
-		draw.text((x, top + 0), "Searching for network", font=font, fill=255)
-	disp.image(image)
-	disp.show()
-	time.sleep(1)
+        draw.rectangle((0, 0, width, height), outline=0, fill=0)
+        disp.fill(0)
+        disp.show()
+        ip_addr = get_ip()
+        if ip_addr:
+                draw.text((x, top + 0), "IP: " + ip_addr, font=font, fill=255)
+        else:
+                draw.text((x, top + 0), "Searching for network", font=font, fill=255)
+        disp.image(image)
+        disp.show()
+        time.sleep(10)
