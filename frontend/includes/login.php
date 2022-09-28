@@ -1,10 +1,7 @@
 <!-- Login form for admin authentication -->
-<form id="loginForm" action="./authenticate.php" method="post">
-  <h1 id="loginH1">Admin Login</h1>
-  <h2 id="loginH2"><?=$_GET['err']?></h2>
-  <label for="username">
-    <i class="fas fa-user"></i>
-  </label>
+<form id="loginForm" action="./includes/authenticate.php" method="post">
+  <h1 id="formH1">Admin Login</h1>
+  <h2 id="formH2"><?=$_GET['err']?></h2>
   <input
     type="text"
     name="username"
@@ -13,9 +10,6 @@
     required
     autofocus 
   />
-  <label for="password">
-    <i class="fas fa-lock"></i>
-  </label>
   <input
     type="password"
     name="password"

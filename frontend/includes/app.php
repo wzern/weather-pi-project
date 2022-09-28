@@ -15,7 +15,7 @@ if ($conn->connect_error) {
 }
 
 // Execute SQL command
-$sqlNode = "SELECT DISTINCT node_id FROM `sensor_data_alt`";
+$sqlNode = "SELECT DISTINCT node_id FROM `sensor_data`";
 $resultNode = $conn->query($sqlNode);
 
 // Extract data into arrays if data exists
@@ -68,7 +68,7 @@ if ($resultNode->num_rows > 0) {
 
 
     // Execute SQL command
-    $stmt = $conn->prepare('SELECT * FROM `sensor_data_alt` WHERE ' . $periodStr . ' node_id = ?');
+    $stmt = $conn->prepare('SELECT * FROM `sensor_data` WHERE ' . $periodStr . ' node_id = ?');
     $stmt->bind_param('s', $activeNodeID); // 's' specifies the variable type => 'string'
     $stmt->execute();
 

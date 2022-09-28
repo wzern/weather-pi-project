@@ -28,7 +28,7 @@ if ($stmt = $con->prepare('SELECT * FROM api_keys WHERE api_key = ?')) {
 
   if ($stmt->num_rows > 0) {
     if ($stmt->num_rows > 0 && !empty($NODE_ID)) {
-      $sql = "INSERT INTO sensor_data_alt (node_id, temperature, humidity, pressure, light)
+      $sql = "INSERT INTO sensor_data (node_id, temperature, humidity, pressure, light)
       VALUES ('$NODE_ID', '$TEMPERATURE', '$HUMIDITY', '$PRESSURE', '$LIGHT')";
   
       if ($con->query($sql) === TRUE) {

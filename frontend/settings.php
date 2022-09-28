@@ -28,9 +28,6 @@ if (!isset($_SESSION['loggedin'])) {
     <!-- Include site navigation -->
     <?php require_once 'includes/nav.php'?>
 
-    <!-- Include main PHP script -->
-    <?php require_once 'includes/app.php'?>
-
     <!-- Main body element -->
     <main id="main">
         <header>
@@ -39,7 +36,7 @@ if (!isset($_SESSION['loggedin'])) {
         </header>
         
         <div class="container" id="container">
-            Settings
+            <?php require_once 'includes/settings.php'; ?>
         </div>
 
         <!-- Include footer -->

@@ -82,11 +82,30 @@ body {
   background-color: var(--github-nav);
 }
 
+#passwordUpdateForm {
+  margin: 8vh auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 600px;
+}
+
 #loginForm {
   margin: 24vh auto;
   display: flex;
   flex-direction: column;
   width: 250px;
+}
+
+#passwordUpdateForm input {
+  font-size: 18px;
+  border-radius: 50px;
+  border: 1px solid #f1f1f1;
+  padding: 8px 12px;
+  margin: 10px 0;
+  color: #f1f1f1;
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 #loginForm input {
@@ -99,6 +118,7 @@ body {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
+#passwordUpdateForm input[type="submit"],
 #loginForm input[type="submit"] {
   cursor: pointer;
   background: linear-gradient(
@@ -111,19 +131,39 @@ body {
   color: var(--github-nav);
 }
 
+#passwordUpdateForm input[type="submit"]:hover,
 #loginForm input[type="submit"]:hover {
   opacity: 0.6;
 }
 
-#loginH1 {
+#formH1 {
+  width: 100%;
   margin: auto;
 }
 
-#loginH2 {
+#formH2 {
   font-size: 14px;
   color: rgb(255, 138, 102);
   text-align: center;
   width: 100%;
+}
+
+#settingsH1 {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+#settingsH2 {
+  font-size: 16px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+#settingsErrorH2 {
+  font-size: 16px;
+  color: rgb(255, 138, 102);
+  width: 100%;
+  margin-bottom: 8px;
 }
 
 main {
@@ -171,6 +211,42 @@ header h1 a {
 
 .chart canvas {
   margin: 15px;
+}
+
+.settings {
+  padding: 15px;
+  width: 100%;
+}
+
+.settings #apiToken {
+  background: transparent;
+  color: #f1f1f1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  min-width: 350px;
+  margin-top: 5px;
+}
+
+.settings input[type="submit"] {
+  font-size: 15px;
+  font-weight: bold;
+  border-radius: 50px;
+  border: 1px solid #f1f1f1;
+  padding: 5px 8px;
+  margin: 8px 0;
+  color: #f1f1f1;
+  cursor: pointer;
+  background-color: rgb(80, 0, 0);
+}
+
+.manageToken {
+  margin: 8vh auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 600px;
 }
 
 footer {
