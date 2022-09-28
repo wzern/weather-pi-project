@@ -61,6 +61,7 @@ echo "WARNING! Running this script more than once will reset all user"
 echo "accounts, previously collected data, and will completely re-generate"
 echo "the web-interface and databases. Only run this script again if you"
 echo "encounter problems or have forgotten your password"
+echo ""
 
 while true; do
 
