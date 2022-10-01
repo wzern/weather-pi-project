@@ -48,7 +48,21 @@ This is a year 13 digital and electronics project in which we build a weather st
 </ul>
 
 <h2 id="getting-started">🚀 Getting Started</h2>
-<p>Coming soon</p>
+
+<details>
+<summary markdown="span"> Downloading and Installing Raspberry Pi OS</summary>
+<h3>Downloading and Installing Raspberry Pi OS</h3>
+<p>Once you have all the required components, use the next steps to prepare your Raspberry Pi 4 to act as a database and webserver for your weather station system. This is where the ESP8266 sensor units will send their sensor readings for us to see in our web-browser.</p>
+<p>The following steps will work on Linux, Windows and MacOS</p>
+<ol>
+  <li>Insert a microSD card / reader into your computer</li>
+  <li>Download and install the <a href="https://www.raspberrypi.com/software/" target="_blank">official Raspberry Pi Imager</a></li>
+  <li>Click Choose OS and select 'Raspberry Pi OS (Other)'. Then choose 'Raspberry Pi OS Lite (64-bit)'</li>
+  <li>Click Choose Storage and choose your SD Card</li>
+  <li>Click the Settings icon in the bottom right corner. Set the hostname to espi-weather, enable SSH, and set your password for the 'pi' user. Please DO NOT change the username, keep it as pi or else the installer script for this project will not work properly.</li>
+  <li>Finally, click Write</li>
+</ol>
+</details>
 
 <h2 id="license">📝 License</h2>
 <h3>This project is under license from MIT.</h3>
