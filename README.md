@@ -50,18 +50,73 @@ This is a year 13 digital and electronics project in which we build a weather st
 <h2 id="getting-started">🚀 Getting Started</h2>
 
 <details>
-<summary markdown="span"> Downloading and Installing Raspberry Pi OS</summary>
-<h3>Downloading and Installing Raspberry Pi OS</h3>
-<p>Once you have all the required components, use the next steps to prepare your Raspberry Pi 4 to act as a database and webserver for your weather station system. This is where the ESP8266 sensor units will send their sensor readings for us to see in our web-browser.</p>
-<p>The following steps will work on Linux, Windows and MacOS</p>
-<ol>
-  <li>Insert a microSD card / reader into your computer</li>
-  <li>Download and install the <a href="https://www.raspberrypi.com/software/" target="_blank">official Raspberry Pi Imager</a></li>
-  <li>Click Choose OS and select 'Raspberry Pi OS (Other)'. Then choose 'Raspberry Pi OS Lite (64-bit)'</li>
-  <li>Click Choose Storage and choose your SD Card</li>
-  <li>Click the Settings icon in the bottom right corner. Set the hostname to espi-weather, enable SSH, and set your password for the 'pi' user. Please DO NOT change the username, keep it as pi or else the installer script for this project will not work properly.</li>
-  <li>Finally, click Write</li>
-</ol>
+  <summary markdown="span"> Downloading and Installing Raspberry Pi OS</summary>
+  <h3>Downloading and Installing Raspberry Pi OS</h3>
+  <p>Once you have all the required components, use the next steps to prepare your Raspberry Pi 4 to act as a database and webserver for your weather station system. This is where the ESP8266 sensor units will send their sensor readings for us to see in our web-browser.</p>
+  <p>The following steps will work on Linux, Windows and MacOS</p>
+  <ol>
+    <li>Insert a microSD card / reader into your computer</li>
+    <li>Download and install the <a href="https://www.raspberrypi.com/software/" target="_blank">official Raspberry Pi Imager</a></li>
+    <li>Click Choose OS and select 'Raspberry Pi OS (Other)'. Then choose 'Raspberry Pi OS Lite (64-bit)'</li>
+    <li>Click Choose Storage and choose your SD Card</li>
+    <li>Click the Settings icon in the bottom right corner. Set the hostname to espi-weather, enable SSH, and set your password for the 'pi' user. Please DO NOT change the username, keep it as pi or else the installer script for this project will not work properly.</li>
+    <li>Finally, click Write</li>
+  </ol>
+  <hr>
+</details>
+
+<details>
+  <summary markdown="span"> Booting Your Raspberry Pi for the First Time</summary>
+  <h3>Booting Your Raspberry Pi for the First Time</h3>
+  <p>Coming Soon</p>
+  <hr>
+</details>
+
+<details>
+  <summary markdown="span"> Preparing your Raspberry Pi for the installation scripts</summary>
+  <h3>Preparing your Raspberry Pi for the installation scripts</h3>
+  <p>In order to run the scripts that install the software for this project, we need to install Git</p>
+
+```shell
+sudo apt install git -y
+```
+
+  <p>It is also recommended to set your Timezone so the system time is accurate. The following command is setting the timezone to Auckland, default for New Zealand</p>
+
+```shell
+sudo timedatectl set-timezone Pacific/Auckland
+```
+
+  <hr>
+</details>
+
+<details>
+  <summary markdown="span"> Running the weather station install script</summary>
+  <h3>Running the weather station install script</h3>
+  <p>This script was built to configure the Raspberry Pi as a database and webserver. It will pull the latest firmware from this repository, configure the backend services, and install the web-interface where you will be able to visualise the sensor data and configure system settings</p>
+
+  <p>First we clone my repository into the home directory</p>
+
+```shell
+cd ~/
+git clone https://github.com/wzern/weather-pi-project
+cd weather-pi-project/
+```
+
+<p>Next we execute the install.sh script</p>
+
+```shell
+sudo bash install.sh
+```
+
+<h3>First time logging in</h3>
+<h4>ESPi Weather Interface - https://raspberry_pi_ip/</h4>
+<h4>Username: <em>admin</em></h4>
+<h4>Password: <em>password</em></h4>
+
+<p>If you encounter problems with the script, please open a new issue on this repository with a screenshot of the script's output</p>
+
+  <hr>
 </details>
 
 <h2 id="license">📝 License</h2>
