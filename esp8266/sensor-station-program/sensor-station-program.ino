@@ -106,5 +106,5 @@ void loop() {
   delay(3600000);
 }
 
-// Made with ❤️ by William Zernikow
+// Made with ❤ by William Zernikow
 // Project repo: https://github.com/wzern/weather-pi-project
