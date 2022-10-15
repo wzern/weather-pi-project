@@ -78,9 +78,10 @@ esac
 done
 echo ""
 
-msg_info "Updating package lists"
+msg_info "Updating system packages"
 apt update &>/dev/null
-msg_ok "Updated package lists"
+apt upgrade -y &>/dev/null
+msg_ok "Updated system packages"
 
 msg_info "Installing Apache2"
 apt-get install apache2 -y &>/dev/null
