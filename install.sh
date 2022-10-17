@@ -111,7 +111,7 @@ msg_ok "Enabled Apache2 rewrite module"
 msg_info "Enabling HTTPS"
 a2enmod ssl &>/dev/null
 systemctl restart apache2 &>/dev/null
-openssl req -x509 -sha256 -days 356 -nodes -newkey rsa:2048 -subj "/CN=demo.mlopshub.com/C=US/L=San Fransisco" -keyout /etc/ssl/private/apache-selfsigned.key -out /etc/ssl/certs/apache-selfsigned.crt &>/dev/null
+openssl req -x509 -sha256 -days 3560 -nodes -newkey rsa:2048 -subj "/CN=weatherpi.local/C=US/L=San Fransisco" -keyout /etc/ssl/private/apache-selfsigned.key -out /etc/ssl/certs/apache-selfsigned.crt &>/dev/null
 rm -rf  /etc/apache2/sites-enabled/* &>/dev/null
 cp ./conf/apache2/weatherpi.conf /etc/apache2/sites-enabled/weatherpi.conf &>/dev/null
 systemctl restart apache2 &>/dev/null
