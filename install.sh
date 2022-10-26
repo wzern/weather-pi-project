@@ -87,9 +87,9 @@ msg_info "Installing Apache2"
 apt-get install apache2 -y &>/dev/null
 msg_ok "Installed Apache2"
 
-msg_info "Installing MySQL"
+msg_info "Installing MariaDB"
 apt-get install mariadb-server -y &>/dev/null
-msg_ok "Installed MySQL"
+msg_ok "Installed MariaDB"
 
 msg_info "Installing PHP Modules"
 apt-get install php libapache2-mod-php php-mysql php-curl php-gd php-json php-zip -y &>/dev/null
