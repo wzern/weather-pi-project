@@ -83,6 +83,10 @@ apt update &>/dev/null
 apt upgrade -y &>/dev/null
 msg_ok "Updated system packages"
 
+msg_info "Installing Fail2Ban"
+apt-get install fail2ban -y &>/dev/null
+msg_ok "Installed Fail2Ban"
+
 msg_info "Installing Apache2"
 apt-get install apache2 -y &>/dev/null
 msg_ok "Installed Apache2"
