@@ -71,9 +71,9 @@ void loop() {
   }
 
   // Save current sensor values in variables
-  float h = dht.readHumidity(); //Humidity level
-  float t = dht.readTemperature(); //Temperature in celcius
-  float p = bmp.readPressure();
+  float humidity = dht.readHumidity(); //Humidity level
+  float temperature = dht.readTemperature(); //Temperature in celcius
+  float pressure = bmp.readPressure();
   float lux = lightMeter.readLightLevel();
 
   // Create a URI for the request
@@ -83,11 +83,11 @@ void loop() {
   url += "&node_id=";
   url += node_id;
   url += "&temperature=";
-  url += String(t);
+  url += String(temperature);
   url += "&humidity=";
-  url += String(h);
+  url += String(humidity);
   url += "&pressure=";
-  url += String(p/100);
+  url += String(pressure/100);
   url += "&light=";
   url += String(lux);
 
