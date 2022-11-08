@@ -99,14 +99,6 @@ msg_info "Installing PHP Modules"
 apt-get install php libapache2-mod-php php-mysql php-curl php-gd php-json php-zip -y &>/dev/null
 msg_ok "Installed PHP Modules"
 
-msg_info "Installing phpMyAdmin"
-export DEBIAN_FRONTEND=noninteractive
-apt-get -yq install phpmyadmin &>/dev/null
-cp ./conf/phpmyadmin.conf /etc/dbconfig-common/phpmyadmin.conf &>/dev/null
-dpkg-reconfigure --frontend=noninteractive phpmyadmin &>/dev/null
-systemctl restart apache2 &>/dev/null
-msg_ok "Installed phpMyAdmin"
-
 msg_info "Enabling Apache2 rewrite module"
 a2enmod rewrite &>/dev/null
 systemctl restart apache2 &>/dev/null
