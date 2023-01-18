@@ -125,7 +125,6 @@ msg_info "Initialising web interface"
 rm -rf /var/www/html/* &>/dev/null
 cp -r frontend/* /var/www/html/ &>/dev/null
 cp -r backend/* /var/www/html/ &>/dev/null
-ln -s /usr/share/phpmyadmin /var/www/html &>/dev/null
 msg_ok "Initialised web interface"
   
 msg_info "Cleaning up"
