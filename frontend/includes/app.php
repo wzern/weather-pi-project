@@ -32,7 +32,7 @@ if ($resultNode->num_rows > 0) {
     $activeNodeID = (!empty($_GET['node'])) ? $_GET['node'] : $defaultNodeID;
 
     // Define the differet time ranges
-    $chartPeriods = ['Last 24 Hours', 'Last 48 Hours', 'Last 7 Days'];
+    $chartPeriods = ['Last 24 Hours', 'Last 48 Hours', 'Last 7 Days', 'Last 30 Days'];
     $selectedPeriod = $_GET['chartPeriod'];
 
     // Convert the selected time range to minutes by converting to hours, adding one hour, then subtracting 1 minute. 
@@ -51,6 +51,10 @@ if ($resultNode->num_rows > 0) {
                 break;
             case 'Last 7 Days':
                 $periodStr = 'time >= NOW() - INTERVAL 10079 MINUTE AND';
+                $timeFormatStr = 'timestampRawArr.map((i) => formatDayAMPM(roundHour(new Date(i))));';
+                break;
+            case 'Last 30 Days':
+                $periodStr = 'time >= NOW() - INTERVAL 43200 MINUTE AND';
                 $timeFormatStr = 'timestampRawArr.map((i) => formatDayAMPM(roundHour(new Date(i))));';
                 break;
             default:
