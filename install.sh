@@ -19,6 +19,21 @@ shopt -s expand_aliases
 alias die='EXIT=$? LINE=$LINENO error_exit'
 trap die ERR
 
+# --- PHP settings ---------------------------------------------------------
+PHP_MINOR="8.5"          # branch to track; apt upgrade keeps it on the latest 8.5.x
+PHP_MIN="8.5.12"         # refuse to install anything older than this
+AUTO_PHP_UPDATES="yes"   # yes = unattended security updates for the PHP repo
+PHP_PACKAGES=(
+  "php${PHP_MINOR}-cli"
+  "libapache2-mod-php${PHP_MINOR}"
+  "php${PHP_MINOR}-mysql"
+  "php${PHP_MINOR}-curl"
+  "php${PHP_MINOR}-gd"
+  "php${PHP_MINOR}-zip"
+)                        # json is built into PHP 8, there is no php8.5-json package
+export DEBIAN_FRONTEND=noninteractive
+# ---------------------------------------------------------------------------
+
 function error_exit() {
   trap - ERR
   local reason="Unknown failure occurred."
@@ -42,10 +57,72 @@ function msg_error() {
     echo -e "${BFR} ${CROSS} ${RD}${msg}${CL}"
 }
 
+# Clean failure with our own message (error_exit expects $EXIT/$LINE from the ERR trap)
+function fail() {
+  trap - ERR
+  msg_error "$1"
+  exit 1
+}
+
+# Add the repo that carries current PHP builds (Debian / Raspberry Pi OS / Ubuntu)
+function add_php_repo() {
+  local os_id codename
+  os_id="$(. /etc/os-release && printf '%s' "${ID:-}")"
+  codename="$(. /etc/os-release && printf '%s' "${VERSION_CODENAME:-}")"
+  case "$os_id" in
+    debian|raspbian)
+      apt-get install -y ca-certificates curl lsb-release apt-transport-https &>/dev/null
+      curl -fsSLo /tmp/debsuryorg-archive-keyring.deb https://packages.sury.org/debsuryorg-archive-keyring.deb
+      dpkg -i /tmp/debsuryorg-archive-keyring.deb &>/dev/null
+      rm -f /tmp/debsuryorg-archive-keyring.deb
+      echo "deb [signed-by=/usr/share/keyrings/debsuryorg-archive-keyring.gpg] https://packages.sury.org/php/ ${codename} main" > /etc/apt/sources.list.d/php.list
+      ;;
+    ubuntu)
+      apt-get install -y software-properties-common ca-certificates &>/dev/null
+      add-apt-repository -y ppa:ondrej/php &>/dev/null
+      ;;
+    *)
+      fail "Unsupported OS '${os_id}' - need Debian, Raspberry Pi OS or Ubuntu"
+      ;;
+  esac
+  apt-get update &>/dev/null
+}
+
+# Make sure the repo really offers PHP_MIN or newer before we touch anything
+function check_php_candidate() {
+  local cand upstream
+  cand="$(apt-cache policy "php${PHP_MINOR}-cli" | awk '/Candidate:/ {print $2}')"
+  if [ -z "$cand" ] || [ "$cand" = "(none)" ]; then
+    fail "PHP ${PHP_MINOR} is not available for this OS (Ubuntu 20.04 and other EOL releases are not supported)"
+  fi
+  upstream="$(printf '%s' "$cand" | sed -E 's/^[0-9]+://; s/-.*$//')"
+  if ! dpkg --compare-versions "$upstream" ge "$PHP_MIN"; then
+    fail "Repository only offers PHP ${upstream}, need ${PHP_MIN} or newer - try again later"
+  fi
+  PHP_CANDIDATE="$upstream"
+}
+
+# Unattended security updates for the PHP repo only (plus whatever is already allowed)
+function enable_php_auto_updates() {
+  local os_id pattern
+  os_id="$(. /etc/os-release && printf '%s' "${ID:-}")"
+  apt-get install -y unattended-upgrades &>/dev/null
+  if [ "$os_id" = "ubuntu" ]; then
+    pattern='"origin=LP-PPA-ondrej-php,codename=${distro_codename}";'
+  else
+    pattern='"site=packages.sury.org";'
+  fi
+  {
+    printf 'Unattended-Upgrade::Origins-Pattern {\n\t%s\n};\n' "$pattern"
+    printf 'APT::Periodic::Update-Package-Lists "1";\n'
+    printf 'APT::Periodic::Unattended-Upgrade "1";\n'
+  } > /etc/apt/apt.conf.d/52espi-php-autoupdate
+}
+
 echo ""
 echo "-------------------------------------------------------------------"
 echo "  ______  _____ _____ _     ____             _                  _  "
-echo " |  ____|/ ____|  __ (_)   |  _ \    V1.1   | |  github/wzern  | | "
+echo " |  ____|/ ____|  __ (_)   |  _ \    V1.2   | |  github/wzern  | | "
 echo " | |__  | (___ | |__) |    | |_) | __ _  ___| | _____ _ __   __| | "
 echo " |  __|  \___ \|  ___/ |   |  _ < / _' |/ __| |/ / _ \ '_ \ / _' | "
 echo " | |____ ____) | |   | |   | |_) | (_| | (__|   <  __/ | | | (_| | "
@@ -54,13 +131,15 @@ echo ""
 echo "-------------------------------------------------------------------"
 echo ""
 echo "You are about to install the ESPi Weather Station Backend: Stable"
-echo "This script is designed for use on Rapsberry Pi 4 only. However,"
-echo "a system with Ubuntu 20.04 has been tested and works well"
+echo "This script is designed for use on Raspberry Pi 4 (Raspberry Pi OS)."
+echo "Other Debian 11/12/13 and Ubuntu 24.04+ systems should also work."
+echo "PHP ${PHP_MINOR} (${PHP_MIN} or newer) is installed from the Sury repository."
 echo ""
 echo "WARNING! Running this script more than once will reset all user"
 echo "accounts, previously collected data, and will completely re-generate"
 echo "the web-interface and databases. Only run this script again if you"
-echo "encounter problems or have forgotten your password"
+echo "encounter problems or have forgotten your password."
+echo "To update PHP on an existing install, use espi-php-update.sh instead."
 echo ""
 
 while true; do
@@ -95,9 +174,23 @@ msg_info "Installing MariaDB"
 apt-get install mariadb-server -y &>/dev/null
 msg_ok "Installed MariaDB"
 
-msg_info "Installing PHP Modules"
-apt-get install php libapache2-mod-php php-mysql php-curl php-gd php-json php-zip -y &>/dev/null
-msg_ok "Installed PHP Modules"
+msg_info "Adding PHP ${PHP_MINOR} repository"
+add_php_repo
+check_php_candidate
+msg_ok "Added PHP repository (PHP ${PHP_CANDIDATE} available)"
+
+msg_info "Installing PHP ${PHP_MINOR} and modules"
+apt-get install -y "${PHP_PACKAGES[@]}" &>/dev/null
+a2enmod "php${PHP_MINOR}" &>/dev/null
+update-alternatives --set php "/usr/bin/php${PHP_MINOR}" &>/dev/null
+systemctl restart apache2 &>/dev/null
+msg_ok "Installed PHP $(php -r 'echo PHP_VERSION;')"
+
+if [ "$AUTO_PHP_UPDATES" = "yes" ]; then
+  msg_info "Enabling automatic PHP security updates"
+  enable_php_auto_updates
+  msg_ok "Enabled automatic PHP security updates"
+fi
 
 msg_info "Enabling Apache2 rewrite module"
 a2enmod rewrite &>/dev/null
