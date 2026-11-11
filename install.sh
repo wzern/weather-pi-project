@@ -64,6 +64,149 @@ function fail() {
   exit 1
 }
 
+# --- Install / update helpers ---------------------------------------------
+WEB_ROOT="/var/www/html"
+MANIFEST="/var/lib/espi-weather/web-manifest"   # files we installed (outside the web root), so updates can remove stale ones
+DB_NAME="weatherPiProject"
+MODE=""                                 # update | fresh (chosen by flag or by the menu)
+ASSUME_YES="no"
+BACKUP_FILE=""
+
+function usage() {
+  echo "Usage: sudo bash install.sh [--update | --fresh] [--yes]"
+  echo ""
+  echo "  (no option)  Fresh install. If an existing install is found you are asked"
+  echo "               whether to update it or reinstall it from scratch."
+  echo "  --update     Update the web interface code only. The database (accounts,"
+  echo "               API token and sensor data) is NOT touched."
+  echo "  --fresh      Reinstall from scratch. Resets accounts and DELETES all"
+  echo "               collected data (a backup of the old database is saved first)."
+  echo "  --yes, -y    Do not ask for confirmation."
+  echo "  --help, -h   Show this help."
+}
+
+# Is there already an ESPi database on this machine?
+function existing_install() {
+  local found
+  found="$(mysql -u root -N -e "SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA='${DB_NAME}' AND TABLE_NAME='sensor_data'" 2>/dev/null || true)"
+  [ "$found" = "1" ]
+}
+
+# Ask a yes/no question. Returns 0 for yes, 1 for no.
+function confirm() {
+  local yn
+  if [ "$ASSUME_YES" = "yes" ]; then
+    return 0
+  fi
+  while true; do
+    read -r -p "$1 (y/n) " yn
+    case $yn in
+      [yY] ) return 0;;
+      [nN] ) return 1;;
+      * ) echo Invalid response;;
+    esac
+  done
+}
+
+# Menu shown when an existing installation is detected
+function choose_mode() {
+  local choice
+  echo "An existing ESPi installation was found on this system."
+  echo ""
+  echo "  1) Update    - install the latest web interface code and KEEP your"
+  echo "                 database (accounts, API token and sensor data)"
+  echo "  2) Reinstall - wipe EVERYTHING (accounts, API token and all sensor"
+  echo "                 data) and set up from scratch"
+  echo "  3) Cancel"
+  echo ""
+  while true; do
+    read -r -p "Choose an option [1]: " choice
+    case "${choice:-1}" in
+      1 ) MODE="update"; return;;
+      2 ) MODE="fresh"; return;;
+      3 ) echo "Exiting..."; exit 0;;
+      * ) echo Invalid response;;
+    esac
+  done
+}
+
+# Last chance before an existing database is destroyed
+function confirm_wipe() {
+  local answer
+  echo ""
+  echo -e "${RD}WARNING!${CL} This will permanently delete all user accounts, the API token"
+  echo "and ALL collected sensor data. A backup of the current database will be"
+  echo "saved first."
+  echo ""
+  if [ "$ASSUME_YES" != "yes" ]; then
+    read -r -p "Type RESET to continue: " answer
+    if [ "$answer" != "RESET" ]; then
+      echo "Exiting..."
+      exit 0
+    fi
+  fi
+}
+
+# Dump the current database to /root before it is replaced (readable by root only)
+function backup_database() {
+  local dest
+  dest="/root/${DB_NAME}-backup-$(date +%Y%m%d-%H%M%S).sql"
+  ( umask 077; mysqldump -u root --single-transaction "$DB_NAME" > "$dest" ) \
+    || fail "Could not back up the database - nothing has been changed"
+  BACKUP_FILE="$dest"
+}
+
+# Copy the web interface into place.
+#   fresh  - empties the web root first
+#   update - only removes the files the previous install put there, then copies the new ones
+function install_web_files() {
+  local f
+  mkdir -p "$WEB_ROOT" "$(dirname "$MANIFEST")"
+  if [ "$1" = "fresh" ]; then
+    rm -rf "${WEB_ROOT:?}"/* &>/dev/null
+  elif [ -f "$MANIFEST" ]; then
+    while IFS= read -r f; do
+      case "$f" in
+        ""|/*|*..*) continue;;
+      esac
+      rm -f -- "${WEB_ROOT}/${f}"
+    done < "$MANIFEST"
+  fi
+  cp -r frontend/. "${WEB_ROOT}/" &>/dev/null
+  cp -r backend/. "${WEB_ROOT}/" &>/dev/null
+  { (cd frontend && find . -type f); (cd backend && find . -type f); } | sed 's|^\./||' | sort -u > "$MANIFEST"
+}
+
+# Best guess at the address the user should browse to
+function server_ip() {
+  local addr
+  addr="$(/sbin/ip -o -4 addr list eth0 2>/dev/null | awk '{print $4}' | cut -d/ -f1 || true)"
+  if [ -z "$addr" ]; then
+    addr="$(hostname -I 2>/dev/null | awk '{print $1}' || true)"
+  fi
+  printf '%s' "${addr:-<raspberry-pi-ip>}"
+}
+
+# Update an existing install: new web interface code, database left exactly as it is
+function run_update() {
+  msg_info "Updating web interface"
+  install_web_files update
+  msg_ok "Updated web interface"
+
+  echo ""
+  echo "-------------------------------------------------------------------"
+  echo ""
+  echo "Update complete. Your database was not touched - accounts, the API"
+  echo "token and all collected sensor data are unchanged."
+  echo ""
+  echo "Server Address: https://$(server_ip)/"
+  echo ""
+  echo "To update PHP on this system, use espi-php-update.sh instead."
+  echo ""
+  echo "-------------------------------------------------------------------"
+  echo ""
+}
+
 # Add the repo that carries current PHP builds (Debian / Raspberry Pi OS / Ubuntu)
 function add_php_repo() {
   local os_id codename
@@ -122,7 +265,7 @@ function enable_php_auto_updates() {
 echo ""
 echo "-------------------------------------------------------------------"
 echo "  ______  _____ _____ _     ____             _                  _  "
-echo " |  ____|/ ____|  __ (_)   |  _ \    V1.2   | |  github/wzern  | | "
+echo " |  ____|/ ____|  __ (_)   |  _ \    V1.3   | |  github/wzern  | | "
 echo " | |__  | (___ | |__) |    | |_) | __ _  ___| | _____ _ __   __| | "
 echo " |  __|  \___ \|  ___/ |   |  _ < / _' |/ __| |/ / _ \ '_ \ / _' | "
 echo " | |____ ____) | |   | |   | |_) | (_| | (__|   <  __/ | | | (_| | "
@@ -130,31 +273,72 @@ echo " |______|_____/|_|   |_|   |____/ \__,_|\___|_|\_\___|_| |_|\__,_| "
 echo ""
 echo "-------------------------------------------------------------------"
 echo ""
-echo "You are about to install the ESPi Weather Station Backend: Stable"
+# Always work from the folder this script lives in (it copies ./frontend, ./backend and ./conf)
+cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+
+for arg in "$@"; do
+  case "$arg" in
+    --update ) MODE="update";;
+    --fresh|--reinstall ) MODE="fresh";;
+    -y|--yes ) ASSUME_YES="yes";;
+    -h|--help ) usage; exit 0;;
+    * ) usage; fail "Unknown option: $arg";;
+  esac
+done
+
+if [ "$(id -u)" -ne 0 ]; then
+  fail "Please run this script as root, e.g. sudo bash install.sh"
+fi
+
+echo "ESPi Weather Station Backend: Stable"
+echo ""
+
+# Decide between a fresh install and an update
+HAS_INSTALL="no"
+if existing_install; then
+  HAS_INSTALL="yes"
+fi
+
+if [ "$MODE" = "update" ] && [ "$HAS_INSTALL" = "no" ]; then
+  fail "No existing ESPi installation was found to update - run without --update for a fresh install"
+fi
+
+if [ -z "$MODE" ]; then
+  if [ "$HAS_INSTALL" = "yes" ]; then
+    choose_mode
+  else
+    MODE="fresh"
+  fi
+fi
+
+if [ "$MODE" = "update" ]; then
+  echo "Updating the web interface only. Your database will not be touched."
+  echo ""
+  run_update
+  exit 0
+fi
+
+# ---- Fresh install from here on ----
 echo "This script is designed for use on Raspberry Pi 4 (Raspberry Pi OS)."
 echo "Other Debian 11/12/13 and Ubuntu 24.04+ systems should also work."
 echo "PHP ${PHP_MINOR} (${PHP_MIN} or newer) is installed from the Sury repository."
-echo ""
-echo "WARNING! Running this script more than once will reset all user"
-echo "accounts, previously collected data, and will completely re-generate"
-echo "the web-interface and databases. Only run this script again if you"
-echo "encounter problems or have forgotten your password."
 echo "To update PHP on an existing install, use espi-php-update.sh instead."
 echo ""
 
-while true; do
-
-read -p "Do you want to proceed? (y/n) " yn
-
-case $yn in 
-	[yY] )
-		break;;
-	[nN] ) echo Exiting...;
-		exit;;
-	* ) echo Invalid response;;
-esac
-
-done
+if [ "$HAS_INSTALL" = "yes" ]; then
+  confirm_wipe
+  msg_info "Backing up the existing database"
+  backup_database
+  msg_ok "Backed up the existing database to ${BACKUP_FILE}"
+else
+  echo "This will install and configure Apache2, MariaDB and PHP, and set up a"
+  echo "new database and web interface."
+  echo ""
+  if ! confirm "Do you want to proceed?"; then
+    echo "Exiting..."
+    exit 0
+  fi
+fi
 echo ""
 
 msg_info "Updating system packages"
@@ -215,9 +399,7 @@ mysql -u root < conf/database.sql
 msg_ok "Prepared database"
 
 msg_info "Initialising web interface"
-rm -rf /var/www/html/* &>/dev/null
-cp -r frontend/* /var/www/html/ &>/dev/null
-cp -r backend/* /var/www/html/ &>/dev/null
+install_web_files fresh
 msg_ok "Initialised web interface"
   
 msg_info "Cleaning up"
@@ -228,7 +410,7 @@ msg_ok "Cleaned"
 echo ""
 echo "-------------------------------------------------------------------"
 echo ""
-echo Server Address: https://$(/sbin/ip -o -4 addr list eth0 | awk '{print $4}' | cut -d/ -f1)/
+echo "Server Address: https://$(server_ip)/"
 echo ""
 echo "Default Username: admin"
 echo "Default Password: password"
