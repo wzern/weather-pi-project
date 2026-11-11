@@ -356,18 +356,31 @@ apt-get install mariadb-server -y &>/dev/null
 msg_ok "Installed MariaDB"
 
 msg_info "Adding PHP ${PHP_MINOR} repository"
-add_php_repo
+os_id="$(. /etc/os-release && printf '%s' "${ID:-}")"
+codename="$(. /etc/os-release && printf '%s' "${VERSION_CODENAME:-}")"
+
+# Ubuntu 26.04+ (resolute or newer) and newer distributions carry PHP 8.5 natively
+if [ "$os_id" = "ubuntu" ] && dpkg --compare-versions "$(lsb_release -rs 2>/dev/null || echo "24.04")" ge "26.04"; then
+    apt-get update &>/dev/null
+    msg_ok "Using native Ubuntu repository for PHP ${PHP_MINOR}"
+else
+    add_php_repo
+    msg_ok "Added PHP repository (PHP ${PHP_CANDIDATE} available)"
+fi
+
 check_php_candidate
-msg_ok "Added PHP repository (PHP ${PHP_CANDIDATE} available)"
 
 msg_info "Installing PHP ${PHP_MINOR} and modules"
+a2dismod mpm_event mpm_worker &>/dev/null || true
+a2enmod mpm_prefork &>/dev/null
 apt-get install -y "${PHP_PACKAGES[@]}" &>/dev/null
 a2enmod "php${PHP_MINOR}" &>/dev/null
 update-alternatives --set php "/usr/bin/php${PHP_MINOR}" &>/dev/null
+systemctl reset-failed apache2.service || true
 systemctl restart apache2 &>/dev/null
 msg_ok "Installed PHP $(php -r 'echo PHP_VERSION;')"
 
-if [ "$AUTO_PHP_UPDATES" = "yes" ]; then
+if [ "$AUTO_PHP_UPDATES" = "yes" ] && [ "$os_id" != "ubuntu" || dpkg --compare-versions "$(lsb_release -rs 2>/dev/null || echo "24.04")" lt "26.04" ]; then
   msg_info "Enabling automatic PHP security updates"
   enable_php_auto_updates
   msg_ok "Enabled automatic PHP security updates"
