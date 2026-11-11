@@ -201,8 +201,6 @@ function run_update() {
   echo ""
   echo "Server Address: https://$(server_ip)/"
   echo ""
-  echo "To update PHP on this system, use espi-php-update.sh instead."
-  echo ""
   echo "-------------------------------------------------------------------"
   echo ""
 }
@@ -322,7 +320,6 @@ fi
 echo "This script is designed for use on Raspberry Pi 4 (Raspberry Pi OS)."
 echo "Other Debian 11/12/13 and Ubuntu 24.04+ systems should also work."
 echo "PHP ${PHP_MINOR} (${PHP_MIN} or newer) is installed from the Sury repository."
-echo "To update PHP on an existing install, use espi-php-update.sh instead."
 echo ""
 
 if [ "$HAS_INSTALL" = "yes" ]; then
