@@ -1,32 +1,51 @@
 :root {
-  --github-nav: #161b22;
-  --github-body: #0d1117;
+  --bg: #0d1117;
+  --panel: #161b22;
+  --panel-border: #30363d;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --accent-start: rgb(255, 138, 102);
+  --accent-end: rgb(255, 245, 102);
+  --link: #b7f1ff;
+  --link-hover: #4ea0ff;
+  --radius: 12px;
 }
 
-* {
-  transition: all 0.3s;
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
-  font-family: Arial, Helvetica, sans-serif;
   box-sizing: border-box;
 }
 
 body {
-  font-family: "Lato", sans-serif;
-  color: azure;
-  background-color: var(--github-body);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, Helvetica, sans-serif;
+  color: var(--text);
+  background-color: var(--bg);
 }
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--link-hover);
+  outline-offset: 2px;
+}
+
+/* ---------- Side navigation ---------- */
 
 .sidenav {
   height: 100%;
   width: 0;
   position: fixed;
-  z-index: 1;
+  z-index: 10;
   top: 0;
   left: 0;
-  background-color: var(--github-nav);
+  background-color: var(--panel);
   overflow-x: hidden;
-  transition: 0.5s;
+  transition: width 0.3s;
   padding-top: 60px;
 }
 
@@ -36,6 +55,7 @@ body {
   font-size: 25px;
   color: #818181;
   display: block;
+  white-space: nowrap;
 }
 
 .sidenav a:hover {
@@ -48,39 +68,166 @@ body {
   right: 25px;
   font-size: 36px;
   margin-left: 50px;
+  padding: 8px;
+}
+
+main {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  transition: margin-left 0.3s;
+}
+
+/* ---------- Header ---------- */
+
+header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+}
+
+header h1 {
+  text-align: center;
+  font-size: 1.8rem;
+}
+
+header h1 a {
+  text-decoration: none;
+  color: var(--text);
 }
 
 #openbtn {
-  position: absolute;
+  justify-self: start;
   font-size: 30px;
+  line-height: 1;
+  color: inherit;
+  background: none;
+  border: none;
   cursor: pointer;
+  padding: 4px 8px;
 }
 
 #optForm {
-  position: absolute;
-  right: 0;
-  padding: 0;
-  margin: 20px;
+  justify-self: end;
+  display: flex;
+  gap: 8px;
 }
 
 #nodeSelect,
 #chartPeriodSelect {
-  margin: 10px;
   padding: 6px 15px;
-  color: azure;
-  background-color: var(--github-nav);
-  border: 1px solid gray;
+  font-size: 14px;
+  color: var(--text);
+  background-color: var(--panel);
+  border: 1px solid var(--muted);
   border-radius: 1.5em;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
   text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s;
 }
 
-#nodeSelect option {
-  color: azure;
-  background-color: var(--github-nav);
+#nodeSelect:hover,
+#chartPeriodSelect:hover {
+  border-color: var(--text);
 }
+
+#nodeSelect option,
+#chartPeriodSelect option {
+  color: var(--text);
+  background-color: var(--panel);
+}
+
+.container {
+  min-height: calc(85vh - 20px);
+  width: 100%;
+}
+
+/* ---------- Dashboard ---------- */
+
+.notice {
+  margin: 10vh auto 0;
+  text-align: center;
+  color: var(--muted);
+}
+
+.success {
+  color: #7ee787;
+  margin-bottom: 8px;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 16px;
+  padding: 8px 16px 0;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-top: 3px solid var(--accent, var(--muted));
+  border-radius: var(--radius);
+}
+
+.card-label {
+  font-size: 13px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.card-value {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.card-value small {
+  font-size: 1rem;
+  font-weight: 400;
+  margin-left: 4px;
+  color: var(--muted);
+}
+
+.card-range {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.resolution {
+  padding: 12px 16px 4px;
+  font-size: 13px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.charts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  padding: 12px 16px 16px;
+}
+
+.chart {
+  position: relative;
+  height: 340px;
+  padding: 12px;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+}
+
+/* ---------- Forms (login / settings) ---------- */
 
 #passwordUpdateForm {
   margin: 8vh auto;
@@ -89,6 +236,7 @@ body {
   justify-content: flex-start;
   width: 100%;
   max-width: 600px;
+  padding: 0 16px;
 }
 
 #loginForm {
@@ -98,16 +246,7 @@ body {
   width: 250px;
 }
 
-#passwordUpdateForm input {
-  font-size: 18px;
-  border-radius: 50px;
-  border: 1px solid #f1f1f1;
-  padding: 8px 12px;
-  margin: 10px 0;
-  color: #f1f1f1;
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
+#passwordUpdateForm input,
 #loginForm input {
   font-size: 18px;
   border-radius: 50px;
@@ -121,14 +260,11 @@ body {
 #passwordUpdateForm input[type="submit"],
 #loginForm input[type="submit"] {
   cursor: pointer;
-  background: linear-gradient(
-    to bottom right,
-    rgb(255, 138, 102),
-    rgb(255, 245, 102)
-  );
+  background: linear-gradient(to bottom right, var(--accent-start), var(--accent-end));
   border: none;
   font-weight: bold;
-  color: var(--github-nav);
+  color: var(--panel);
+  transition: opacity 0.2s;
 }
 
 #passwordUpdateForm input[type="submit"]:hover,
@@ -144,7 +280,7 @@ body {
 
 #formH2 {
   font-size: 14px;
-  color: rgb(255, 138, 102);
+  color: var(--accent-start);
   text-align: center;
   width: 100%;
 }
@@ -162,56 +298,9 @@ body {
 
 #settingsErrorH2 {
   font-size: 16px;
-  color: rgb(255, 138, 102);
+  color: var(--accent-start);
   width: 100%;
   margin-bottom: 8px;
-}
-
-main {
-  position: relative;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-}
-
-header {
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-header > * {
-  flex: 1 1 0px;
-  padding: 15px;
-}
-
-header h1 {
-  text-align: center;
-}
-
-header h1 a {
-  text-decoration: none;
-  color: #f1f1f1;
-}
-
-.container {
-  min-height: calc(85vh - 20px);
-  width: 100%;
-}
-
-.charts {
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-}
-
-.chart {
-  width: 50%;
-  /* height: 20px; */
-}
-
-.chart canvas {
-  margin: 15px;
 }
 
 .settings {
@@ -226,6 +315,7 @@ header h1 a {
   outline: none;
   font-size: 16px;
   min-width: 350px;
+  max-width: 100%;
   margin-top: 5px;
 }
 
@@ -250,6 +340,8 @@ header h1 a {
   max-width: 600px;
 }
 
+/* ---------- Footer ---------- */
+
 footer {
   margin: 20px auto;
   width: fit-content;
@@ -258,40 +350,49 @@ footer {
 }
 
 footer a {
-  color: #b7f1ff;
+  color: var(--link);
   text-decoration: none;
   opacity: 0.9;
 }
 
 footer a:hover {
-  color: #4ea0ff;
-  text-decoration: none;
+  color: var(--link-hover);
 }
 
+/* ---------- Responsive ---------- */
+
 @media only screen and (max-width: 1024px) {
-  .chart {
-    width: 100%;
-    /* height: 20px; */
+  .charts {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 @media only screen and (max-width: 900px) {
-  .container {
-    margin-top: 20px;
+  header {
+    grid-template-columns: auto 1fr;
+  }
+  header h1 {
+    font-size: 1.4rem;
+    text-align: left;
   }
   #optForm {
-    align-items: center;
-    justify-content: center;
-    display: flex;
-    top: 42px;
-    width: 100%;
-    padding: 0;
-    margin: 20px 0;
+    grid-column: 1 / -1;
+    justify-self: center;
   }
   .sidenav {
     padding-top: 15px;
   }
   .sidenav a {
     font-size: 18px;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  .chart {
+    height: 280px;
+  }
+  .settings #apiToken {
+    min-width: 0;
+    width: 100%;
   }
 }

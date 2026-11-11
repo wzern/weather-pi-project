@@ -1,56 +1,58 @@
 <?php
-// Define database connection settings
-$servername = "localhost";
-$username = "weatherPi";
-$password = "4Iz0p3hu9nSJujKz3kPM";
-$dbname = "weatherPiProject";
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/helpers.php';
 
-// Create a connection to the database server
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Messages for the codes set by regen-token.php and password-updater.php
+$settingsErrors = [
+    'db'       => 'Failed to connect to the database',
+    'fields'   => 'Please fill in all the required fields',
+    'mismatch' => 'New passwords do not match',
+    'short'    => 'New password must be at least 8 characters',
+    'current'  => 'Current password is incorrect!',
+    'account'  => 'Your user account does not exist',
+    'token'    => 'The API token could not be regenerated. Please rebuild the database!',
+    'csrf'     => 'Your session expired, please try again',
+];
+$settingsError   = $settingsErrors[get_str('err')] ?? '';
+$tokenRegenerated = get_str('ok') === 'token';
 
-// Check the server connection
-if ($conn->connect_error) {
-    echo "<center style='position: absolute; top: 10vh; left: 50%; transform: translateX(-50%)'>Connection to the database failed</center>";
-    die();
+$apiToken = 'Non existent. Please rebuild the database!';
+$conn = db_connect();
+if ($conn === null) {
+    echo "<p class='notice'>Connection to the database failed</p>";
+    return;
 }
-
-$apiTokenSQL = "SELECT * FROM `api_keys` LIMIT 1";
-$resultToken = $conn->query($apiTokenSQL);
-
-// Extract data into arrays if data exists
-if ($resultToken->num_rows > 0) {
-    // output data of each row
-    while($row = $resultToken->fetch_assoc()) {
-        $apiToken = $row['api_key'];
-    }
-} else {
-    $apiToken = "Non existent. Please rebuild the database!";
+$result = $conn->query('SELECT api_key FROM `api_keys` LIMIT 1');
+if ($result && ($row = $result->fetch_assoc())) {
+    $apiToken = $row['api_key'];
 }
-
-// Close Connection
 $conn->close();
 ?>
 
 <div class="settings">
     <div class="manageToken">
         <h1 id="settingsH1">Manage API Token</h1>
-        <h2 id="settingsH2">Current token: <input type="text" id="apiToken" value="<?=$apiToken?>" readonly></h2>
+        <h2 id="settingsH2">Current token: <input type="text" id="apiToken" value="<?= e($apiToken) ?>" readonly></h2>
+        <?php if ($tokenRegenerated): ?>
+            <p class="success">New token created. Remember to update it on your sensor stations.</p>
+        <?php endif; ?>
         <form action="./includes/regen-token.php" method="post">
-            <input type="text" name="token" value="<?=$apiToken?>" hidden />
+            <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>" />
+            <input type="hidden" name="token" value="<?= e($apiToken) ?>" />
             <input type="submit" value="Regenerate" />
         </form>
-
     </div>
-
 
     <form id="passwordUpdateForm" action="./includes/password-updater.php" method="post">
         <h1 id="settingsH1">Change password</h1>
-        <h2 id="settingsErrorH2"><?=$_GET['err']?></h2>
+        <h2 id="settingsErrorH2"><?= e($settingsError) ?></h2>
+        <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>" />
         <input
             type="password"
             name="passwordCurrent"
             placeholder="Current Password"
             id="passwordCurrent"
+            autocomplete="current-password"
             required
         />
         <input
@@ -58,6 +60,7 @@ $conn->close();
             name="password"
             placeholder="Password"
             id="password"
+            autocomplete="new-password"
             required
         />
         <input
@@ -65,6 +68,7 @@ $conn->close();
             name="passwordConfirm"
             placeholder="Confirm Password"
             id="passwordConfirm"
+            autocomplete="new-password"
             required
         />
         <input type="submit" value="Update" />

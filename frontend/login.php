@@ -1,41 +1,32 @@
+<?php
+require_once __DIR__ . '/includes/helpers.php';
+espi_session_start(); // before any output, so the nav can tell if you are logged in
+
+$pageTitle  = 'Login';
+$withCharts = false;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Meta tags -->
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Page Title -->
-    <title>Login | ⛅ ESPi Weather Station</title>
-
-    <!-- Dependencies -->
-    <link rel="stylesheet" href="css/styles.css">
-
-    <script src="scripts/nav.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+<?php require __DIR__ . '/includes/head.php'; ?>
 </head>
 <body>
     <!-- Include site navigation -->
-    <?php require_once 'includes/nav.php'?>
+    <?php require_once __DIR__ . '/includes/nav.php'; ?>
 
     <!-- Main body element -->
     <main id="main">
         <header>
-            <span id="openbtn" onclick="openNav()"> &#9776; </span>
+            <button type="button" id="openbtn" onclick="openNav()" aria-label="Open menu">&#9776;</button>
             <h1><a href="./">⛅ ESPi Weather</a></h1>
         </header>
-        
+
         <div class="container" id="container">
-            <?php require_once 'includes/login.php'?>
+            <?php require_once __DIR__ . '/includes/login.php'; ?>
         </div>
 
         <!-- Include footer -->
-        <?php require_once 'includes/footer.php'; ?>
+        <?php require_once __DIR__ . '/includes/footer.php'; ?>
     </main>
-
-    <!-- Render the charts with charts.js script -->
-    <script src="scripts/charts.js"></script>
 </body>
 </html>

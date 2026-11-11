@@ -1,54 +1,51 @@
 <?php
-session_start();
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/helpers.php';
 
-// Define database connection settings
-$servername = "localhost";
-$username = "weatherPi";
-$password = "4Iz0p3hu9nSJujKz3kPM";
-$dbname = "weatherPiProject";
+espi_session_start();
 
-// Create a connection to the database server
-$con = mysqli_connect($servername, $username, $password, $dbname);
-if ( mysqli_connect_errno() ) {
-	// If there is an error with the connection, stop the script and display the error.
-    header('Location: /login.php?err=Failed to connect to MySQL');
-	exit('Failed to connect to MySQL: ' . mysqli_connect_error());
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    redirect('/login.php');
+}
+
+$return = safe_return(post_str('return'));
+
+// Send the user back to the login form with an error code (and where they were headed)
+function login_fail(string $code, string $return): void {
+    redirect('/login.php?err=' . $code . ($return !== '' ? '&return=' . urlencode($return) : ''));
 }
 
 // Check if the data from the login form was submitted
-if ( !isset($_POST['username'], $_POST['password']) ) {
-	// Could not get the data that should have been sent.
-    header('Location: /login.php?err=Please fill both the username and password fields!');
-	exit('Please fill both the username and password fields!');
+$username = post_str('username');
+$password = post_str('password');
+if ($username === '' || $password === '') {
+    login_fail('missing', $return);
 }
 
-// Prepare our SQL, preparing the SQL statement will prevent SQL injection.
-if ($stmt = $con->prepare('SELECT id, password FROM accounts WHERE username = ?')) {
-	$stmt->bind_param('s', $_POST['username']);
-	$stmt->execute();
-	$stmt->store_result();
+$con = db_connect();
+if ($con === null) {
+    login_fail('db', $return);
+}
 
-    if ($stmt->num_rows > 0) {
-        $stmt->bind_result($id, $password);
-        $stmt->fetch();
-        // Account exists, now we verify the password.
-        if (password_verify($_POST['password'], $password)) {
-            // Verification success! User has logged-in!
-            // Create sessions, so we know the user is logged in, they basically act like cookies but remember the data on the server.
-            session_regenerate_id();
-            $_SESSION['loggedin'] = TRUE;
-            $_SESSION['name'] = $_POST['username'];
-            $_SESSION['id'] = $id;
-            header('Location: /' . $_POST['return']);
-        } else {
-            // Incorrect password
-            header('Location: /login.php?err=Incorrect username and/or password!');
-        }
-    } else {
-        // Incorrect username
-        header('Location: /login.php?err=Incorrect username and/or password!');
+// Prepared statements prevent SQL injection
+$stmt = $con->prepare('SELECT id, password FROM accounts WHERE username = ?');
+$stmt->bind_param('s', $username);
+$stmt->execute();
+$stmt->store_result();
+
+if ($stmt->num_rows > 0) {
+    $stmt->bind_result($id, $hash);
+    $stmt->fetch();
+    // Account exists, now we verify the password.
+    if (password_verify($password, $hash)) {
+        // Verification success! Remember on the server that this user is logged in.
+        session_regenerate_id(true);
+        $_SESSION['loggedin'] = true;
+        $_SESSION['name']     = $username;
+        $_SESSION['id']       = $id;
+        redirect('/' . $return);
     }
-
-	$stmt->close();
 }
-?>
+
+// Unknown user or wrong password - same message for both
+login_fail('bad', $return);

@@ -1,62 +1,60 @@
 <?php
-session_start();
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/helpers.php';
 
-// Define database connection settings
-$servername = "localhost";
-$username = "weatherPi";
-$password = "4Iz0p3hu9nSJujKz3kPM";
-$dbname = "weatherPiProject";
-
-// Create a connection to the database server
-$con = mysqli_connect($servername, $username, $password, $dbname);
-if ( mysqli_connect_errno() ) {
-	// If there is an error with the connection, stop the script and display the error.
-    header('Location: /settings.php?err=Failed to connect to MySQL');
-	exit('Failed to connect to MySQL: ' . mysqli_connect_error());
+// Only a logged-in user may change their password, and only via a valid form post
+if (!is_logged_in() || $_SERVER['REQUEST_METHOD'] !== 'POST') {
+    redirect('/settings.php');
+}
+if (!csrf_valid(post_str('csrf'))) {
+    redirect('/settings.php?err=csrf');
 }
 
-// Check if the data from the login form was submitted
-if ( !isset($_POST['passwordCurrent'], $_POST['password'], $_POST['passwordConfirm']) ) {
-	// Could not get the data that should have been sent.
-    header('Location: /settings.php?err=Please fill in all the required fields');
-	exit('Please fill in all the required fields');
+$current = post_str('passwordCurrent');
+$new     = post_str('password');
+$confirm = post_str('passwordConfirm');
+
+if ($current === '' || $new === '' || $confirm === '') {
+    redirect('/settings.php?err=fields');
+}
+if ($new !== $confirm) {
+    redirect('/settings.php?err=mismatch');
+}
+if (strlen($new) < 8) {
+    redirect('/settings.php?err=short');
 }
 
-if ( $_POST['password'] !== $_POST['passwordConfirm'] ) {
-    // Could not get the data that should have been sent.
-    header('Location: /settings.php?err=New passwords do not match');
-	exit('New passwords do not match');
+$con = db_connect();
+if ($con === null) {
+    redirect('/settings.php?err=db');
 }
 
-// Prepare our SQL, preparing the SQL statement will prevent SQL injection.
-if ($stmt = $con->prepare('SELECT id, password FROM accounts WHERE username = ?')) {
-	$stmt->bind_param('s', $_SESSION['name']);
-	$stmt->execute();
-	$stmt->store_result();
+// Prepared statements prevent SQL injection
+$stmt = $con->prepare('SELECT password FROM accounts WHERE id = ?');
+$stmt->bind_param('i', $_SESSION['id']);
+$stmt->execute();
+$stmt->store_result();
 
-    if ($stmt->num_rows > 0) {
-        $stmt->bind_result($id, $password);
-        $stmt->fetch();
-        // Account exists, now we verify the password.
-        if (password_verify($_POST['passwordCurrent'], $password)) {
-            // Verification success!
-            $newHashedPassword = password_hash($_POST['password'] , PASSWORD_DEFAULT);
-            if ($stmt = $con->prepare('UPDATE accounts SET password = ? WHERE username = ?')) {
-                $stmt->bind_param('ss', $newHashedPassword, $_SESSION['name']);
-                $stmt->execute();
-            }
-            header('Location: /logout.php?return=login.php');
-        } else {
-            // Incorrect password
-            header('Location: /settings.php?err=Current password is incorrect!');
-        }
-    } else {
-        // Incorrect username - this should never happen as the user woudln't have been able to log in
-        header('Location: /settings.php?err=Your user account does not exist');
-    }
-
-	$stmt->close();
+if ($stmt->num_rows === 0) {
+    // This should never happen as the user wouldn't have been able to log in
+    redirect('/settings.php?err=account');
 }
 
+$stmt->bind_result($hash);
+$stmt->fetch();
+$stmt->close();
 
-?>
+if (!password_verify($current, $hash)) {
+    redirect('/settings.php?err=current');
+}
+
+// Verification success - store the new password
+$newHash = password_hash($new, PASSWORD_DEFAULT);
+$update = $con->prepare('UPDATE accounts SET password = ? WHERE id = ?');
+$update->bind_param('si', $newHash, $_SESSION['id']);
+$update->execute();
+$update->close();
+$con->close();
+
+// Log out so the user signs in again with the new password
+redirect('/logout.php?return=login.php');

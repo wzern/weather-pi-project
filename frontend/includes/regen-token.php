@@ -1,54 +1,44 @@
 <?php
-// Define database connection settings
-$servername = "localhost";
-$username = "weatherPi";
-$password = "4Iz0p3hu9nSJujKz3kPM";
-$dbname = "weatherPiProject";
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/helpers.php';
 
-// Create a connection to the database server
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check the server connection
-if ($conn->connect_error) {
-    echo "<center style='position: absolute; top: 10vh; left: 50%; transform: translateX(-50%)'>Connection to the database failed</center>";
-    die();
+// Only a logged-in user may regenerate the token, and only via a valid form post
+if (!is_logged_in() || $_SERVER['REQUEST_METHOD'] !== 'POST') {
+    redirect('/settings.php');
+}
+if (!csrf_valid(post_str('csrf'))) {
+    redirect('/settings.php?err=csrf');
 }
 
-if (!isset($_POST['token'])) {
-    header('Location: /settings.php');
-	exit('Token not provided');
+$curToken = post_str('token');
+if ($curToken === '') {
+    redirect('/settings.php');
 }
 
-function genToken($length) {
+// Random alphanumeric token from a cryptographically secure source
+function genToken(int $length): string {
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    $randomString = '';
- 
+    $max = strlen($characters) - 1;
+    $token = '';
     for ($i = 0; $i < $length; $i++) {
-        $index = rand(0, strlen($characters) - 1);
-        $randomString .= $characters[$index];
+        $token .= $characters[random_int(0, $max)];
     }
- 
-    return $randomString;
+    return $token;
 }
 
-$curToken = $_POST['token'];
+$conn = db_connect();
+if ($conn === null) {
+    redirect('/settings.php?err=db');
+}
+
 $newToken = genToken(32);
 
-$apiTokenSQL = "UPDATE `api_keys` SET api_key = '$newToken' WHERE api_key = '$curToken'";
-$resultToken = $conn->query($apiTokenSQL);
-
-// Extract data into arrays if data exists
-if ($resultToken->num_rows > 0) {
-    // output data of each row
-    while($row = $resultToken->fetch_assoc()) {
-        $apiToken = $row['api_key'];
-    }
-
-} else {
-    $apiToken = "Non existent. Please rebuild the database!";
-}
-
-header('Location: /settings.php');
-// Close Connection
+// Prepared statements prevent SQL injection
+$stmt = $conn->prepare('UPDATE `api_keys` SET api_key = ? WHERE api_key = ?');
+$stmt->bind_param('ss', $newToken, $curToken);
+$stmt->execute();
+$changed = $stmt->affected_rows > 0;
+$stmt->close();
 $conn->close();
-?>
+
+redirect($changed ? '/settings.php?ok=token' : '/settings.php?err=token');

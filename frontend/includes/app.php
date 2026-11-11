@@ -1,124 +1,152 @@
 <?php
-// Define database connection settings
-$servername = "localhost";
-$username = "weatherPi";
-$password = "4Iz0p3hu9nSJujKz3kPM";
-$dbname = "weatherPiProject";
+// Data layer for the dashboard.
+//
+// Instead of sending every raw reading to the browser, the database averages
+// readings into fixed-size time buckets, so a chart never has to draw more than
+// a few hundred points no matter how long the period is or how often the
+// sensors report. Tweak the 'bucket' values below to trade detail for speed.
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/helpers.php';
 
-// Create a connection to the database server
-$conn = new mysqli($servername, $username, $password, $dbname);
+const ESPI_METRICS = ['temperature', 'humidity', 'pressure', 'light'];
 
-// Check the server connection
-if ($conn->connect_error) {
-    echo "<center style='position: absolute; top: 10vh; left: 50%; transform: translateX(-50%)'>Connection to the database failed</center>";
-    die();
+// label => window length and averaging bucket, both in seconds
+//   24 hours / 5 min  = 288 points      7 days / 30 min = 336 points
+//   48 hours / 10 min = 288 points     30 days / 2 hours = 360 points
+const ESPI_PERIODS = [
+    'Last 24 Hours' => ['seconds' => 86400,   'bucket' => 300],
+    'Last 48 Hours' => ['seconds' => 172800,  'bucket' => 600],
+    'Last 7 Days'   => ['seconds' => 604800,  'bucket' => 1800],
+    'Last 30 Days'  => ['seconds' => 2592000, 'bucket' => 7200],
+];
+
+// SQL fragment that turns a text column into a number, or NULL if it isn't one.
+// The sensor sketch can post "nan" when a sensor read fails; without this check
+// MariaDB would count it as 0 and drag the averages down.
+// $col is always one of ESPI_METRICS, never user input.
+function sql_num(string $col): string {
+    return 'IF(' . $col . ' REGEXP \'^-?[0-9]+([.][0-9]+)?$\', ' . $col . ' + 0, NULL)';
 }
 
-// Execute SQL command
-$sqlNode = "SELECT DISTINCT node_id FROM `sensor_data`";
-$resultNode = $conn->query($sqlNode);
+function num_or_null($value, int $decimals = 1): ?float {
+    return is_numeric($value) ? round((float) $value, $decimals) : null;
+}
 
-// Extract data into arrays if data exists
-if ($resultNode->num_rows > 0) {
-    $nodeIDArr = array();
-
-    // output data of each row
-    while($row = $resultNode->fetch_assoc()) {
-        $nodeIDArr[] = $row['node_id'];
+// Run a prepared SELECT and return all rows, or null if anything went wrong.
+function db_rows(mysqli $conn, string $sql, string $types, array $params): ?array {
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        return null;
     }
-
-    // Define a default option incase the user has not specified a node
-    $defaultNodeID = (isset($nodeIDArr[0])) ? $nodeIDArr[0] : "Default";
-    $activeNodeID = (!empty($_GET['node'])) ? $_GET['node'] : $defaultNodeID;
-
-    // Define the differet time ranges
-    $chartPeriods = ['Last 24 Hours', 'Last 48 Hours', 'Last 7 Days', 'Last 30 Days'];
-    $selectedPeriod = $_GET['chartPeriod'];
-
-    // Convert the selected time range to minutes by converting to hours, adding one hour, then subtracting 1 minute. 
-    // This is so that the chart shows the last <x> amount of hours but also the current time.
-    // E.g: Selected 24 hours, add one hour (25), convet to minutes (1500), subtract one minute -> 1499 minutes.
-    // 1499 minutes on the chart might look something like 3pm yesterday to 3pm today rather than 4pm yesterday to 3pm today.
-    if (!empty($selectedPeriod)) {
-        switch ($selectedPeriod) {
-            case 'Last 24 Hours':
-                $periodStr = 'time >= NOW() - INTERVAL 1499 MINUTE AND';
-                $timeFormatStr = 'timestampRawArr.map((i) => formatAMPM(roundHour(new Date(i))));';
-                break;
-            case 'Last 48 Hours':
-                $periodStr = 'time >= NOW() - INTERVAL 2939 MINUTE AND';
-                $timeFormatStr = 'timestampRawArr.map((i) => formatDayAMPM(roundHour(new Date(i))));';
-                break;
-            case 'Last 7 Days':
-                $periodStr = 'time >= NOW() - INTERVAL 10079 MINUTE AND';
-                $timeFormatStr = 'timestampRawArr.map((i) => formatDayAMPM(roundHour(new Date(i))));';
-                break;
-            case 'Last 30 Days':
-                $periodStr = 'time >= NOW() - INTERVAL 43200 MINUTE AND';
-                $timeFormatStr = 'timestampRawArr.map((i) => formatDayAMPM(roundHour(new Date(i))));';
-                break;
-            default:
-                $periodStr = 'time >= NOW() - INTERVAL 1499 MINUTE AND';
-                $timeFormatStr = 'timestampRawArr.map((i) => formatAMPM(roundHour(new Date(i))));';
-        } 
-    } 
-
-    // Default to 24 hours
-    else {
-        $periodStr = 'time >= NOW() - INTERVAL 1499 MINUTE AND';
-        $timeFormatStr = 'timestampRawArr.map((i) => formatAMPM(roundHour(new Date(i))));';
+    if ($types !== '') {
+        $stmt->bind_param($types, ...$params);
     }
-
-
-
-    // Execute SQL command
-    $stmt = $conn->prepare('SELECT * FROM `sensor_data` WHERE ' . $periodStr . ' node_id = ?');
-    $stmt->bind_param('s', $activeNodeID); // 's' specifies the variable type => 'string'
-    $stmt->execute();
-
+    if (!$stmt->execute()) {
+        $stmt->close();
+        return null;
+    }
     $result = $stmt->get_result();
-
-    // Extract data into arrays if data exists
-    if ($result->num_rows > 0) {
-        $temperatureDataArr = array();
-        $humidityDataArr = array();
-        $pressureDataArr = array();
-        $pressureSLDataArr = array();
-        $luxDataArr = array();
-        $timestampArr = array();
-
-        // output data of each row
-        while($row = $result->fetch_assoc()) {
-            $temperatureDataArr[] = $row['temperature'];
-            $humidityDataArr[] = $row['humidity'];
-            $pressureDataArr[] = $row['pressure'];
-            $pressureSLDataArr[] = 1013.2;
-            $luxDataArr[] = $row['light'];
-            $luxDataMinAvgArr[] = 32000;
-            $luxDataMaxAvgArr[] = 100000;
-            $timestampArr[] = $row['time'];
-        }
-    } else {
-        echo "<center style='position: absolute; top: 10vh; left: 50%; transform: translateX(-50%)'>No data was found for this device</center>";
-    }
-} else {
-    echo "<center style='position: absolute; top: 10vh; left: 50%; transform: translateX(-50%)'>No devices were found</center>";
+    $rows = $result ? $result->fetch_all(MYSQLI_ASSOC) : null;
+    $stmt->close();
+    return $rows;
 }
 
-// Close Connection
-$conn->close();
+// State shared with index.php / charts.php
+$chartPeriods    = array_keys(ESPI_PERIODS);
+$nodeIDArr       = [];
+$activeNodeID    = '';
+$selectedPeriod  = $chartPeriods[0];
+$dashboardError  = null;   // message shown instead of the charts
+$dashboard       = null;   // data handed to scripts/charts.js
 
-?> 
+$conn = db_connect();
 
-<script>
-    // Setup Block used to parse the PHP arrays into javascipt arrays
-    const temperatureDataArr = <?php echo json_encode($temperatureDataArr) ?>;
-    const humidityDataArr = <?php echo json_encode($humidityDataArr) ?>;
-    const pressureDataArr = <?php echo json_encode($pressureDataArr) ?>;
-    const pressureSLDataArr = <?php echo json_encode($pressureSLDataArr) ?>;
-    const luxDataArr = <?php echo json_encode($luxDataArr) ?>;
-    const luxDataMinAvgArr = <?php echo json_encode($luxDataMinAvgArr) ?>;
-    const luxDataMaxAvgArr = <?php echo json_encode($luxDataMaxAvgArr) ?>;
-    const timestampRawArr = <?php echo json_encode($timestampArr) ?>;
-    timestampArr = <?=$timeFormatStr?>;
-</script>
+if ($conn === null) {
+    $dashboardError = 'Connection to the database failed';
+} else {
+    // Which sensor nodes have reported data?
+    $nodeRows = db_rows($conn, 'SELECT DISTINCT node_id FROM sensor_data ORDER BY node_id', '', []);
+    if ($nodeRows === null) {
+        $dashboardError = 'Failed to read from the database';
+    } elseif (count($nodeRows) === 0) {
+        $dashboardError = 'No devices were found';
+    } else {
+        $nodeIDArr = array_column($nodeRows, 'node_id');
+
+        // Work out what the user asked for, falling back to sensible defaults
+        $requestedNode   = get_str('node');
+        $requestedPeriod = get_str('chartPeriod');
+        $activeNodeID    = in_array($requestedNode, $nodeIDArr, true) ? $requestedNode : $nodeIDArr[0];
+        $selectedPeriod  = isset(ESPI_PERIODS[$requestedPeriod]) ? $requestedPeriod : $chartPeriods[0];
+
+        $bucket = (int) ESPI_PERIODS[$selectedPeriod]['bucket'];
+        $to     = time();
+        $from   = $to - (int) ESPI_PERIODS[$selectedPeriod]['seconds'];
+
+        // 1) Averaged series for the charts
+        $avgCols = [];
+        foreach (ESPI_METRICS as $m) {
+            $avgCols[] = 'AVG(' . sql_num($m) . ') AS avg_' . $m;
+        }
+        $seriesSql = 'SELECT (UNIX_TIMESTAMP(`time`) DIV ' . $bucket . ') * ' . $bucket . ' AS bucket_start, '
+                   . implode(', ', $avgCols)
+                   . ' FROM sensor_data WHERE node_id = ? AND `time` >= FROM_UNIXTIME(?)'
+                   . ' GROUP BY bucket_start ORDER BY bucket_start';
+        $seriesRows = db_rows($conn, $seriesSql, 'si', [$activeNodeID, $from]);
+
+        // 2) Raw reading count and true min/max over the period (averaging hides the extremes)
+        $statCols = ['COUNT(*) AS n'];
+        foreach (ESPI_METRICS as $m) {
+            $statCols[] = 'MIN(' . sql_num($m) . ') AS min_' . $m;
+            $statCols[] = 'MAX(' . sql_num($m) . ') AS max_' . $m;
+        }
+        $statSql  = 'SELECT ' . implode(', ', $statCols)
+                  . ' FROM sensor_data WHERE node_id = ? AND `time` >= FROM_UNIXTIME(?)';
+        $statRows = db_rows($conn, $statSql, 'si', [$activeNodeID, $from]);
+
+        // 3) The most recent raw reading (even if it is older than the selected period)
+        $latestSql  = 'SELECT UNIX_TIMESTAMP(`time`) AS ts, temperature, humidity, pressure, light'
+                    . ' FROM sensor_data WHERE node_id = ? ORDER BY `time` DESC LIMIT 1';
+        $latestRows = db_rows($conn, $latestSql, 's', [$activeNodeID]);
+
+        if ($seriesRows === null || $statRows === null || $latestRows === null) {
+            $dashboardError = 'Failed to read from the database';
+        } elseif (count($seriesRows) === 0) {
+            $dashboardError = 'No readings were found for this device in the selected period';
+        } else {
+            $dashboard = [
+                'node'     => $activeNodeID,
+                'period'   => $selectedPeriod,
+                'from'     => $from,
+                'to'       => $to,
+                'bucket'   => $bucket,
+                'rawCount' => (int) $statRows[0]['n'],
+                'times'    => [],
+                'range'    => [],
+            ];
+            foreach (ESPI_METRICS as $m) {
+                $dashboard[$m] = [];
+                $dashboard['range'][$m] = [
+                    num_or_null($statRows[0]['min_' . $m]),
+                    num_or_null($statRows[0]['max_' . $m]),
+                ];
+            }
+            foreach ($seriesRows as $row) {
+                // Plot each average in the middle of its bucket
+                $dashboard['times'][] = (int) $row['bucket_start'] + intdiv($bucket, 2);
+                foreach (ESPI_METRICS as $m) {
+                    $dashboard[$m][] = num_or_null($row['avg_' . $m]);
+                }
+            }
+
+            $dashboard['latest'] = null;
+            if (count($latestRows) > 0) {
+                $dashboard['latest'] = ['ts' => (int) $latestRows[0]['ts']];
+                foreach (ESPI_METRICS as $m) {
+                    $dashboard['latest'][$m] = num_or_null($latestRows[0][$m]);
+                }
+            }
+        }
+    }
+    $conn->close();
+}

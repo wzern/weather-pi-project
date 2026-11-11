@@ -1,66 +1,52 @@
+<?php
+// Load the data first - this has to happen before any HTML is sent
+require_once __DIR__ . '/includes/app.php';
+espi_session_start(); // before any output, so the nav can tell if you are logged in
+
+$pageTitle  = '';
+$withCharts = true;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Meta tags -->
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Page Title -->
-    <title>⛅ ESPi Weather Station</title>
-
-    <!-- Dependencies -->
-    <link rel="stylesheet" href="css/styles.css">
-
-    <script src="scripts/nav.js"></script>
-    <script src="scripts/functions.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+<?php require __DIR__ . '/includes/head.php'; ?>
 </head>
 <body>
     <!-- Include site navigation -->
-    <?php require_once 'includes/nav.php'?>
-
-    <!-- Include main PHP script -->
-    <?php require_once 'includes/app.php'?>
+    <?php require_once __DIR__ . '/includes/nav.php'; ?>
 
     <!-- Main body element -->
     <main id="main">
         <header>
-            <span id="openbtn" onclick="openNav()"> &#9776; </span>
+            <button type="button" id="openbtn" onclick="openNav()" aria-label="Open menu">&#9776;</button>
             <h1><a href="./">⛅ ESPi Weather</a></h1>
+            <?php if (count($nodeIDArr) > 0): ?>
             <form method="get" id="optForm">
-                <select name='node' id="nodeSelect" onchange='if(this.value != 0) { this.form.submit(); }'>
-                    <!-- Load each node as a selectable option in the dropdown -->
-                    <?php foreach ($nodeIDArr as $nodeID) {
-                        $selected = ($_GET['node'] === $nodeID) ? "selected" : "";
-                        echo <<<EOD
-                            <option value="$nodeID" $selected>$nodeID</option>
-                        EOD;
-                    } ?>
+                <select name="node" id="nodeSelect" onchange="this.form.submit()" aria-label="Sensor node">
+                    <?php foreach ($nodeIDArr as $nodeID): ?>
+                        <option value="<?= e($nodeID) ?>"<?= $nodeID === $activeNodeID ? ' selected' : '' ?>><?= e($nodeID) ?></option>
+                    <?php endforeach; ?>
                 </select>
-                <select name='chartPeriod' id="chartPeriodSelect" onchange='if(this.value != 0) { this.form.submit(); }'>
-                <!-- Load each time period as a selectable option in the dropdown -->
-                    <?php foreach ($chartPeriods as $chartPeriod) {
-                        $selected = ($_GET['chartPeriod'] === $chartPeriod) ? "selected" : "";
-                        echo <<<EOD
-                            <option value="$chartPeriod" $selected>$chartPeriod</option>
-                        EOD;
-                    } ?>
+                <select name="chartPeriod" id="chartPeriodSelect" onchange="this.form.submit()" aria-label="Time period">
+                    <?php foreach ($chartPeriods as $chartPeriod): ?>
+                        <option value="<?= e($chartPeriod) ?>"<?= $chartPeriod === $selectedPeriod ? ' selected' : '' ?>><?= e($chartPeriod) ?></option>
+                    <?php endforeach; ?>
                 </select>
             </form>
+            <?php endif; ?>
         </header>
 
-        <!-- Chart container element -->
         <div class="container" id="container">
-            <?php require_once 'includes/charts.php';?>
+            <?php require_once __DIR__ . '/includes/charts.php'; ?>
         </div>
-        
+
         <!-- Include footer -->
-        <?php require_once 'includes/footer.php'; ?>
+        <?php require_once __DIR__ . '/includes/footer.php'; ?>
     </main>
 
-    <!-- Render the charts with charts.js script -->
-    <script src="scripts/charts.js"></script>
+    <?php if ($dashboard !== null): ?>
+    <!-- Render the summary cards and charts -->
+    <script src="<?= e(asset('scripts/charts.js')) ?>"></script>
+    <?php endif; ?>
 </body>
 </html>

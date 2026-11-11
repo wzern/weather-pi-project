@@ -1,52 +1,29 @@
-// Round a JS timestamp to nearest hour
-function roundHour(date) {
-  date.setHours(date.getHours() + Math.round(date.getMinutes() / 60));
-  date.setMinutes(0, 0, 0); // Resets also seconds and milliseconds
+// Small formatting helpers used by charts.js
 
-  return date;
+// Format a number with thousands separators, e.g. 2000000 -> "2,000,000".
+// Pass `decimals` for a fixed number of decimal places; leave it out for "at most 1".
+function formatNumber(value, decimals) {
+  const options =
+    decimals === undefined
+      ? { maximumFractionDigits: 1 }
+      : { minimumFractionDigits: decimals, maximumFractionDigits: decimals };
+  return Number(value).toLocaleString(undefined, options);
 }
 
-// Convert a timestamp to AM/PM format
-function formatAMPM(date) {
-  var hours = date.getHours();
-  var minutes = date.getMinutes();
-  var ampm = hours >= 12 ? "pm" : "am";
-  hours = hours % 12;
-  hours = hours ? hours : 12; // the hour '0' should be '12'
-  minutes = minutes < 10 ? "0" + minutes : minutes;
-  var strTime = hours + ":" + minutes + " " + ampm;
-  return strTime;
+// Describe how long ago a unix timestamp (in seconds) was, e.g. "5 min ago"
+function timeAgo(epochSeconds) {
+  const seconds = Math.max(0, Math.round(Date.now() / 1000 - epochSeconds));
+  if (seconds < 60) return "just now";
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return minutes + " min ago";
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return hours + (hours === 1 ? " hour ago" : " hours ago");
+  const days = Math.floor(hours / 24);
+  return days + (days === 1 ? " day ago" : " days ago");
 }
 
-// Convert a timestamp to Day, Hour format
-function formatDayAMPM(date) {
-  var weekdays = new Array(7);
-  weekdays[0] = "Sun";
-  weekdays[1] = "Mon";
-  weekdays[2] = "Tue";
-  weekdays[3] = "Wed";
-  weekdays[4] = "Thu";
-  weekdays[5] = "Fri";
-  weekdays[6] = "Sat";
-  var day = weekdays[date.getDay()];
-  var hours = date.getHours();
-  var minutes = date.getMinutes();
-  var ampm = hours >= 12 ? "pm" : "am";
-  hours = hours % 12;
-  hours = hours ? hours : 12; // the hour '0' should be '12'
-  minutes = minutes < 10 ? "0" + minutes : minutes;
-  var strTime = day + ", " + hours + ":" + minutes + " " + ampm;
-  return strTime;
-}
-
-// Adds commas to large numbers to make it easier to recognise amount of digits e.g. 2000000 -> 2,000,000
-function commafy(num) {
-  var str = num.toString().split(".");
-  if (str[0].length >= 4) {
-    str[0] = str[0].replace(/(\d)(?=(\d{3})+$)/g, "$1,");
-  }
-  if (str[1] && str[1].length >= 5) {
-    str[1] = str[1].replace(/(\d{3})/g, "$1 ");
-  }
-  return str.join(".");
+// Describe an averaging bucket size in seconds, e.g. 1800 -> "30-minute", 7200 -> "2-hour"
+function formatBucket(seconds) {
+  if (seconds % 3600 === 0) return seconds / 3600 + "-hour";
+  return Math.round(seconds / 60) + "-minute";
 }
