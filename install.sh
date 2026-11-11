@@ -379,11 +379,25 @@ systemctl restart apache2 &>/dev/null
 msg_ok "Enabled Apache2 rewrite module"
 
 msg_info "Enabling HTTPS"
+a2dismod mpm_event mpm_worker &>/dev/null || true
+a2enmod mpm_prefork &>/dev/null
 a2enmod ssl &>/dev/null
+systemctl reset-failed apache2.service || true
 systemctl restart apache2 &>/dev/null
-openssl req -x509 -sha256 -days 3560 -nodes -newkey rsa:2048 -subj "/CN=weatherpi.local/C=US/L=San Fransisco" -keyout /etc/ssl/private/apache-selfsigned.key -out /etc/ssl/certs/apache-selfsigned.crt &>/dev/null
-rm -rf  /etc/apache2/sites-enabled/* &>/dev/null
+
+openssl req -x509 -sha256 -days 3560 -nodes -newkey rsa:2048 \
+  -subj "/CN=weatherpi.local/C=US/L=San Fransisco" \
+  -keyout /etc/ssl/private/apache-selfsigned.key \
+  -out /etc/ssl/certs/apache-selfsigned.crt &>/dev/null
+
+rm -rf /etc/apache2/sites-enabled/* &>/dev/null
 cp ./conf/apache2/weatherpi.conf /etc/apache2/sites-enabled/weatherpi.conf &>/dev/null
+
+if ! apache2ctl configtest &>/dev/null; then
+  fail "Apache configuration test failed after enabling weatherpi.conf"
+fi
+
+systemctl reset-failed apache2.service || true
 systemctl restart apache2 &>/dev/null
 msg_ok "Enabled HTTPS"
 
