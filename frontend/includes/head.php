@@ -1,7 +1,7 @@
 <?php
 // Shared <head> contents. Expects $pageTitle (string) and $withCharts (bool) to be set by the page.
 require_once __DIR__ . '/helpers.php';
-$fullTitle = (($pageTitle ?? '') !== '' ? $pageTitle . ' | ' : '') . '⛅ ESPi Weather Station';
+$fullTitle = (($pageTitle ?? '') !== '' ? $pageTitle . ' | ' : '') . 'ESPi Weather Station';
 ?>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
